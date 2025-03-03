@@ -20,8 +20,14 @@ Django对数据迁移
 vue运行
     cd fronted
     npm run dev
-
-1、环境配置
+1、克隆代码
+    创建一个文件夹
+    在这个文件夹中打开gitbash
+    输入git init
+    git clone https://github.com/Mayercodeworld/aircraftBooking.git
+    
+2、环境配置
     cd fronted
     npm install
     npm install buefy@npm:@ntohq/buefy-next
+
