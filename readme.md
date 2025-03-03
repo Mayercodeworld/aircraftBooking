@@ -31,3 +31,7 @@ vue运行
     npm install
     npm install buefy@npm:@ntohq/buefy-next
 
+3、更换模板
+    npm install tailwindcss @tailwindcss/vite
+    
+    npm uninstall buefy@npm:@ntohq/buefy-next@0.2.0
