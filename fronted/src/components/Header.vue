@@ -30,11 +30,6 @@
 </template>
 
 <style scoped>
-header {
-  height: 8vh;
-  /* background-image: url('../assets/photos/header35-img.png'); */
-}
-
 .title-font {
   width: 10%;
 }

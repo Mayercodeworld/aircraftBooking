@@ -41,8 +41,9 @@ onUnmounted(() => {
 <style scoped>
 header {
   position: fixed;
+  height: 8vh;
   width: 100%;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.7);
   transition: all 0.3s ease-in-out; /* 添加过渡效果 */
   z-index: 100;
 }
