@@ -17,20 +17,31 @@
         <a class="mr-5 hover:text-gray-900">其他</a>
         <a class="mr-5 hover:text-gray-900">文档</a>
       </nav>
-      <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">登录
+      <div class="login">
+        <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">登录
         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
           <path d="M5 12h14M12 5l7 7-7 7"></path>
         </svg>
-      </router-link>
+        </router-link>
+      </div>
+      
     </div>
   </header>
 </template>
 
 <style scoped>
+header {
+  height: 8vh;
+  /* background-image: url('../assets/photos/header35-img.png'); */
+}
+
+.title-font {
+  width: 10%;
+}
 nav {    
-  width: 25%;
+  width: 300px;
   height: 36px;
-  /* background-color: pink; */
+  background-color: #fff;
   box-sizing: border-box;
   border-radius: 16px;
   border-bottom: 1.3px solid #000;
@@ -47,4 +58,9 @@ nav .mr-5:hover {
 nav .active {
   background-color: #e5e7eb;
 }
+
+.login {
+  width: 10%;
+}
+
 </style>
