@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 
 const route = useRoute();
-const flightsData = ref(null);
+const flightsData = ref([]);
 const loading = ref(true);
 
 // 监听路由变化，当查询参数变化时重新发送请求
@@ -240,8 +240,8 @@ async function fetchFlights(queryParams) {
                                 <h5 class="font-normal mb-0 mr-6 text-nowrap text-[20px] w-1/2">筛选：</h5>
                                 <select
                                     class="text-[#20283B] dark:text-white bg-[#F6F6F6] dark:bg-[#404156] border border-[#ffffff1c] py-[6px] pr-[36px] pl-[12px] focus:outline-2 focus:outline-blue-500 focus:border-blue-500 w-full">
-                                    <option selected>Price per Adult</option>
-                                    <option value="1">Price per Child</option>
+                                    <option selected>成人价</option>
+                                    <option value="1">学生价</option>
                                 </select>
                             </form>
                         </div>
@@ -250,23 +250,12 @@ async function fetchFlights(queryParams) {
                     <div>
                         <!-- item -->
                         <div v-for="(flight, index) in flightsData" :key="index" class="grid grid-cols-12 mt-4">
+                            
                             <div class="col-span-12 lg:col-span-10 lg:pr-0">
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
                                     <!-- airlines name -->
                                     <div class="col-span-6 sm:col-span-3">
-                                        <div class="flex items-center mb-2">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
                                         <div class="flex items-center">
                                             <div class="p-3">
                                                 <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
@@ -274,17 +263,17 @@ async function fetchFlights(queryParams) {
                                             </div>
                                             <div>
                                                 <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
+                                                    {{ flight.airline }} <br />
+                                                    {{ flight.flight_no }}
                                                 </h4>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- time -->
                                     <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
+                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.departure_hour }}:{{ flight.departure_minute }}</h4>
+                                        <p class="mb-1 mt-2 opacity-50">{{flight.arrival_month}}月{{ flight.arrival_day }}日, {{ flight.arrival_weekday_name }}</p>
+                                        <p class="mb-0 opacity-100 font-bold text-[16px]">{{ flight.departure_city }}</p>
                                     </div>
                                     <!-- stops -->
                                     <div class="text-center col-span-6 sm:col-span-3">
@@ -296,22 +285,25 @@ async function fetchFlights(queryParams) {
 
                                     <!-- time -->
                                     <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
+                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.arrival_hour }}:{{ flight.arrival_minute }}</h4>
+                                        <p class="mb-1 mt-2 opacity-50">{{flight.arrival_month}}月{{ flight.arrival_day }}日, {{ flight.arrival_weekday_name }}</p>
+                                        <p class="mb-0 opacity-100 font-bold text-[16px]">{{ flight.arrival_city }}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-span-12 lg:col-span-2 lg:pl-0">
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
-                                    <h2 class="text-[32px] font-bold mb-1">$600</h2>
+                                    <h2 class="text-[32px] font-bold mb-1">￥{{ flight.price }}</h2>
                                     <button
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">Book</button>
+                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
+                                    </button>
                                 </div>
                             </div>
                         </div>
+                   
                     </div>
+
                 </div>
             </div>
         </div>

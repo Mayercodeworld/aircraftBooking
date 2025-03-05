@@ -25,9 +25,9 @@ def get_flights(request):
             flights = flights.filter(departure_city=query_params['from'])
         if 'to' in query_params:
             flights = flights.filter(arrival_city=query_params['to'])
+        # 可以根据需要添加更多过滤条件
         # if 'depart' in query_params:
         #     flights = flights.filter(departure_time=query_params['depart'])
-        # 可以根据需要添加更多过滤条件
-    
+        
     serializer = FlightSerializer(flights, many=True)
     return Response(serializer.data)

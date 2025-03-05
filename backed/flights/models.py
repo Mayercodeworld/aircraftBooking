@@ -10,6 +10,7 @@ class Flight(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.IntegerField()
     remaining_tickets = models.IntegerField()
+    airline = models.CharField(max_length=100, default='UnKnown') 
 
     def __str__(self):
         return f'航班 {self.flight_no}:  {self.departure_city} 到 {self.arrival_city}'
