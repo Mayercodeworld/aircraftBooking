@@ -1,5 +1,5 @@
 """
-URL configuration for backed project.
+URL configuration for myproject project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -16,11 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import user.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/register/',user.views.register),
-    path('api/login/',user.views.login),
-    # path('api/csrf/', login.views.get_csrf_token, name='get_csrf_token'),
 ]
