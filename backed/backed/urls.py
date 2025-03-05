@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from flights import views as flights_views
+from user import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('back/update/', flights_views.update_flights, name='update_flight'),
     path('back/flights/', flights_views.get_flights, name='get_flights'),
+    path('api/register/',user_views.register),
+    path('api/login/',user_views.login),
 ]
