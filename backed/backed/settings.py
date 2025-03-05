@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     # 添加应用的位置
+    'flights',
 
 ]
 
