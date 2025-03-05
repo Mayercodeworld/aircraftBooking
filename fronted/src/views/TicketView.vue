@@ -1,4 +1,28 @@
 <script setup>
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+
+const route = useRoute();
+const flightsData = ref(null);
+const loading = ref(true);
+
+// 监听路由变化，当查询参数变化时重新发送请求
+watch(() => route.query, async (newQuery) => {
+    await fetchFlights(newQuery);
+}, { immediate: true });
+
+async function fetchFlights(queryParams) {
+    try {
+        const response = await axios.post('http://localhost:8000/back/flights/', queryParams);
+        flightsData.value = response.data;
+    } catch (error) {
+        console.error('Error fetching flights:', error);
+    } finally {
+        loading.value = false;
+    }
+}
+
 // function toggleModal(btnId, modalId) {
 //             const button = document.getElementById(btnId);
 //             const modal = document.getElementById(modalId);
@@ -206,13 +230,14 @@
 
                 <!-- results -->
                 <div class="col-span-12 lg:col-span-9 mt-4 lg:mt-0">
+                    <!-- filters -->
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
-                            <h4 class="mb-0 font-medium text-[24px] text-[#28303B] dark:text-white">565 Results</h4>
+                            <h4 class="mb-0 font-medium text-[24px] text-[#28303B] dark:text-white">{{ flightsData.length }} 条结果</h4>
                         </div>
                         <div class="col-span-12 sm:col-span-6">
                             <form action="" class="flex items-center sm:justify-end">
-                                <h5 class="font-normal mb-0 mr-6 text-nowrap text-[20px] w-1/2">Sort By:</h5>
+                                <h5 class="font-normal mb-0 mr-6 text-nowrap text-[20px] w-1/2">筛选：</h5>
                                 <select
                                     class="text-[#20283B] dark:text-white bg-[#F6F6F6] dark:bg-[#404156] border border-[#ffffff1c] py-[6px] pr-[36px] pl-[12px] focus:outline-2 focus:outline-blue-500 focus:border-blue-500 w-full">
                                     <option selected>Price per Adult</option>
@@ -224,263 +249,7 @@
 
                     <div>
                         <!-- item -->
-                        <div class="grid grid-cols-12 mt-4">
-                            <div class="col-span-12 lg:col-span-10 lg:pr-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
-                                    <!-- airlines name -->
-                                    <div class="col-span-6 sm:col-span-3">
-                                        <div class="flex items-center mb-2">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                    <!-- stops -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <p class="mb-0 opacity-50">31h 10m</p>
-                                        <hr
-                                            class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        <p class="mb-0 opacity-50">2 Stops</p>
-                                    </div>
-
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-2 lg:pl-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
-                                    <h2 class="text-[32px] font-bold mb-1">$600</h2>
-                                    <button
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">Book</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item -->
-                        <div class="grid grid-cols-12 mt-4">
-                            <div class="col-span-12 lg:col-span-10 lg:pr-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
-                                    <!-- airlines name -->
-                                    <div class="col-span-6 sm:col-span-3">
-                                        <div class="flex items-center mb-2">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                    <!-- stops -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <p class="mb-0 opacity-50">31h 10m</p>
-                                        <hr
-                                            class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        <p class="mb-0 opacity-50">2 Stops</p>
-                                    </div>
-
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-2 lg:pl-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
-                                    <h2 class="text-[32px] font-bold mb-1">$600</h2>
-                                    <button
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">Book</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item -->
-                        <div class="grid grid-cols-12 mt-4">
-                            <div class="col-span-12 lg:col-span-10 lg:pr-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
-                                    <!-- airlines name -->
-                                    <div class="col-span-6 sm:col-span-3">
-                                        <div class="flex items-center mb-2">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                    <!-- stops -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <p class="mb-0 opacity-50">31h 10m</p>
-                                        <hr
-                                            class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        <p class="mb-0 opacity-50">2 Stops</p>
-                                    </div>
-
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-2 lg:pl-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
-                                    <h2 class="text-[32px] font-bold mb-1">$600</h2>
-                                    <button
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">Book</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item -->
-                        <div class="grid grid-cols-12 mt-4">
-                            <div class="col-span-12 lg:col-span-10 lg:pr-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
-                                    <!-- airlines name -->
-                                    <div class="col-span-6 sm:col-span-3">
-                                        <div class="flex items-center mb-2">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
-                                            </div>
-                                            <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
-                                                    American Airlines <br />
-                                                    BA- 3271
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                    <!-- stops -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <p class="mb-0 opacity-50">31h 10m</p>
-                                        <hr
-                                            class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        <p class="mb-0 opacity-50">2 Stops</p>
-                                    </div>
-
-                                    <!-- time -->
-                                    <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">9:45 PM</h4>
-                                        <p class="mb-1 mt-2 opacity-50">Jun 04, SUN</p>
-                                        <p class="mb-0 opacity-100 font-bold text-[16px]">Istambul IST</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-2 lg:pl-0">
-                                <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
-                                    <h2 class="text-[32px] font-bold mb-1">$600</h2>
-                                    <button
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">Book</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- item -->
-                        <div class="grid grid-cols-12 mt-4">
+                        <div v-for="(flight, index) in flightsData" :key="index" class="grid grid-cols-12 mt-4">
                             <div class="col-span-12 lg:col-span-10 lg:pr-0">
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
@@ -547,9 +316,9 @@
             </div>
         </div>
     </section>
-
-
-
 </template>
+<style scoped>
+
+</style>
 
 
