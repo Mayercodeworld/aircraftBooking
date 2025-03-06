@@ -5,6 +5,7 @@ import { defineStore } from 'pinia';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isRegisterMode: false,
+    isLoginMode: false,
   }),
   actions: {
     toggleRegisterMode() {
@@ -12,6 +13,12 @@ export const useAuthStore = defineStore('auth', {
     },
     setRegisterMode(mode) {
       this.isRegisterMode = mode;
+    },
+    toggleLoginMode() {
+      this.isLoginMode = !this.isLoginMode;
+    },
+    setLoginMode(mode) {
+      this.isLoginMode = mode;
     },
   },
 });

@@ -1,6 +1,22 @@
 <script setup>
 import {useAuthStore} from '../stores/user_store.js'
+import {onMounted} from "vue";
 const authStore = useAuthStore()
+
+onMounted(() => {
+
+});
+// const Log_in_or_out =  () => {
+//   console.log(authStore.isLoginMode)
+//   if (authStore.isLoginMode === false) {
+//     // 跳转到登录页面
+//     window.location.href = '/login'
+//   }
+//   if(authStore.isLoginMode){
+//     authStore.setLoginMode(false)
+//     window.location.href = '/'
+//   }
+// }
 </script>
 
 <template>
@@ -19,7 +35,13 @@ const authStore = useAuthStore()
         <a class="mr-5 hover:text-gray-900">文档</a>
       </nav>
       <div class="login">
-        <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">{{authStore.isRegisterMode?'登录':'退出'}}
+<!--        <button @click="Log_in_or_out" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">-->
+<!--          {{ authStore.isLoginMode ? '退出' : '登录' }}-->
+<!--          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">-->
+<!--            <path d="M5 12h14M12 5l7 7-7 7"></path>-->
+<!--          </svg>-->
+<!--        </button>-->
+        <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">登录
         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
           <path d="M5 12h14M12 5l7 7-7 7"></path>
         </svg>

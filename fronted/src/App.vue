@@ -4,6 +4,8 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import Footer from './components/Footer.vue';
 import Header from './components/Header.vue';
 
+
+
 var show = ref(true);
 const headerTop = ref('-98px');
 const router = useRouter();
@@ -16,6 +18,7 @@ router.beforeEach((to, from, next) => {
   }
   next();
 });
+
 
 const handleScroll = () => {
   const scrollThreshold = 100;

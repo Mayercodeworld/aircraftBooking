@@ -2,17 +2,14 @@
 import { ref, onMounted } from 'vue';
 import {useAuthStore} from '../stores/user_store.js'
 import axios  from "axios";
-
 const authStore = useAuthStore();
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
 
-// let csrfToken = ref('');
 
 onMounted(() => {
-  authStore.setRegisterMode(false);
 });
 
 const toggleMode = () => {
