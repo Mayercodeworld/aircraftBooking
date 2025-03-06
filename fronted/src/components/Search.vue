@@ -1,27 +1,18 @@
 <script setup>
 import { ref } from 'vue';
+import { formData } from '@/stores/formdata';
 import { useRouter } from 'vue-router';
-const router = useRouter();
-
-const formData = ref({
-    from: '',
-    to: '',
-    depart: '',
-    inputWay: '直达',
-    passengers: '1人',
-    type: '经济'
-});
-
+const router = useRouter(); 
 const showModal = ref(false); 
 
 const searchFlights = () => {
-    if (!formData.value.from || !formData.value.to) {
+    if (!formData.from || !formData.to) {
         showModal.value = true; 
         document.body.style.overflow = 'hidden';
         return;
     }
-    // 将表单数据作为查询参数传递给 TicketView.vue
-    router.push({ path: '/tickets', query: { ...formData.value } });
+    
+    router.push('/tickets');
     showModal.value = false; 
     document.body.style.overflow = 'auto';
 };
@@ -97,7 +88,8 @@ const closeModal = () => {
                             <!--  way -->
                             <div class="col-span-1">
                                 <select v-model="formData.inputWay"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="方式">
                                     <option selected>直达</option>
                                     <option>转机</option>
                                 </select>
@@ -105,7 +97,8 @@ const closeModal = () => {
                             <!-- passengers -->
                             <div class="col-span-1">
                                 <select v-model="formData.passengers"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="人数">
                                     <option selected>1人</option>
                                     <option>2人</option>
                                     <option>3人</option>
@@ -115,7 +108,8 @@ const closeModal = () => {
                             <!-- type -->
                             <div class="col-span-1">
                                 <select v-model="formData.type"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="航班类型">
                                     <option selected>经济</option>
                                     <option>商务</option>
                                 </select>

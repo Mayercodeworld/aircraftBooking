@@ -1,21 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import {useAuthStore} from '../stores/user_store.js'
 import axios  from "axios";
-
-const isRegisterMode = ref(false);
+import Cookies from 'js-cookie';
+const authStore = useAuthStore();
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
 
-// let csrfToken = ref('');
-
 onMounted(() => {
-  isRegisterMode.value = false;
 });
 
 const toggleMode = () => {
-  isRegisterMode.value = !isRegisterMode.value;
+  authStore.toggleRegisterMode();
 };
 
 const ClearForm = () => {
@@ -27,13 +25,13 @@ const ClearForm = () => {
 const handleSubmit = (event) => {
   event.preventDefault();  // 阻止表单的默认提交行为
   // 注册逻辑
-  if (isRegisterMode.value) {
+  if (authStore.isRegisterMode) {
     let request = {
       name: name.value,
       email: email.value,
       password: password.value,
     };
-    console.log(request);
+    // console.log(request);
     axios.post('http://127.0.0.1:8000/api/register/', request)
        .then(response => {
          if (response.data.code === 0) {
@@ -47,7 +45,7 @@ const handleSubmit = (event) => {
        .catch(error => {
          if (error.response) {
            // 请求已发出但服务器响应的状态码不在 2xx 范围内
-           alert(`请求错误: ${error.response.data.data()}`);
+          //  alert(`请求错误: ${error.response.data.data()}`);
          } else if (error.request) {
            // 请求已发出但没有收到响应
            alert('请求已发出，但没有收到响应');
@@ -60,16 +58,20 @@ const handleSubmit = (event) => {
   }
 
   // 处理登录逻辑
-  if(isRegisterMode.value === false){
+  if(authStore.isRegisterMode === false){
     event.preventDefault();  // 阻止表单的默认提交行为
     let request = {
       email: email.value,
+      token:authStore.getToken(),
       password: password.value,
     };
     axios.post('http://127.0.0.1:8000/api/login/', request)
       .then(response => {
         if (response.data.code === 0) {
           alert('登录成功');
+          // token应该存放在浏览器的cookie中
+          Cookies.set('token', response.data.token);
+          Cookies.set('user_id', response.data.id);
           ClearForm();
           window.location.href = '/';
         } else {
@@ -99,13 +101,13 @@ const handleSubmit = (event) => {
     <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company" />
-        <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">{{ isRegisterMode ? 'Register for an account' : 'Sign in to your account' }}</h2>
+        <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">{{ authStore.isRegisterMode ? 'Register for an account' : 'Sign in to your account' }}</h2>
       </div>
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" action="#" method="POST">
 
-          <div v-if="isRegisterMode">
+          <div v-if="authStore.isRegisterMode">
           <label for="name" class="block text-sm font-medium text-gray-900">名字</label>
           <div class="mt-2">
                                                                                 <!-- 使用v-model绑定到name变量   -->
@@ -133,14 +135,14 @@ const handleSubmit = (event) => {
           </div>
 
           <div>
-            <button type="submit" @click="handleSubmit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ isRegisterMode ? '注册' : '登录' }}</button>
+            <button type="submit" @click="handleSubmit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ authStore.isRegisterMode ? '注册' : '登录' }}</button>
           </div>
         </form>
 
         <p class="mt-10 text-center text-sm/6 text-gray-500">
-          {{ isRegisterMode ? '拥有账号  ' : '没有账号?' }}
+          {{ authStore.isRegisterMode ? '拥有账号  ' : '没有账号?' }}
         <button @click="toggleMode" class="font-semibold text-indigo-600 hover:text-indigo-500">
-          {{ isRegisterMode ? '登录' : '注册' }}
+          {{ authStore.isRegisterMode ? '登录' : '注册' }}
         </button>
         </p>
       </div>

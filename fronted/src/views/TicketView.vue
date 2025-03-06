@@ -1,27 +1,64 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { formData } from '@/stores/formdata';
 import axios from 'axios';
 
-const route = useRoute();
+const depart = ref();
 const flightsData = ref([]);
 const loading = ref(true);
+const showSearch = ref(false);
+// 辅助函数：解析日期字符串并提取日期和时间部分
+function parseDateTime(dateTimeString) {
+    const date = new Date(dateTimeString);
 
-// 监听路由变化，当查询参数变化时重新发送请求
-watch(() => route.query, async (newQuery) => {
-    await fetchFlights(newQuery);
-}, { immediate: true });
+    return {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1, // 月份从0开始，需要加1
+        day: date.getDate(),
+        hour: date.getHours().toString().padStart(2, '0'),
+        minute: date.getMinutes().toString().padStart(2, '0'),
+        weekday: date.getDay(), // 0 表示星期日，1 表示星期一，依此类推
+        weekdayName: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][date.getDay()]
+    };
+}
 
-async function fetchFlights(queryParams) {
+function calDuration(departureTime, arrivalTime) {
+    const departure = new Date(departureTime);
+    const arrival = new Date(arrivalTime);
+    const duration = (arrival - departure) / 1000; // 转换为秒
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    return {
+        hours: hours.toString().padStart(2, '0'), // 确保小时是两位数
+        minutes: minutes.toString().padStart(2, '0') // 确保分钟是两位数
+    };
+}
+function toggleSearch() {
+    showSearch.value = !showSearch.value;
+}
+// 搜索航班信息
+async function searchFlights() {
     try {
-        const response = await axios.post('http://localhost:8000/back/flights/', queryParams);
-        flightsData.value = response.data;
+        const response = await axios.post('http://localhost:8000/back/flights/', formData);
+        depart.value = formData.from;
+        flightsData.value = response.data.map(flight => {
+            return {
+                ...flight,
+                departureParsed: parseDateTime(flight.departure_time),
+                arrivalParsed: parseDateTime(flight.arrival_time),
+                duration: calDuration(flight.departure_time, flight.arrival_time),
+            }
+        })
     } catch (error) {
         console.error('Error fetching flights:', error);
     } finally {
         loading.value = false;
     }
 }
+
+onMounted(() => {
+    searchFlights();
+})
 
 // function toggleModal(btnId, modalId) {
 //             const button = document.getElementById(btnId);
@@ -59,25 +96,85 @@ async function fetchFlights(queryParams) {
                                 <i class="fas fa-paper-plane"></i>
                             </div>
                             <div>
-                                <h3 class="text-[28px] font-medium mb-1 sm:mb-2 leading-none">Los Angeles-Istanbul</h3>
+                                <h3 class="text-[28px] font-medium mb-1 sm:mb-2 leading-none">{{ depart }}</h3>
                                 <p class="mb-0 opacity-75 font-normal">JUN 04,SAT | 2TRAVELLERS</p>
                             </div>
                         </div>
                         <div class="col-span-12 sm:col-span-4 flex items-center justify-center sm:justify-end">
-                            <button
-                                class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-md font-bold mt-8 sm:mt-0">Change</button>
+                            <button v-on:click="toggleSearch"
+                                class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-md font-bold mt-8 sm:mt-0">更改
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- 弹出搜索框 -->
+            <div v-if="showSearch" class="searchbox grid grid-cols-12 gap-4 mt-20 md:mt-40 bg-white text-black px-4 rounded-md">
+                <div class="col-span-12">
+                    <div class="p-[24px]">
+                        <form class="grid grid-cols-2 gap-4 md:grid-cols-7" @submit.prevent="searchFlights">
+                            <!-- from -->
+                            <div class="col-span-1 flex justify-center items-center">
+                                <input v-model="formData.from" type="text"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="出发地" />
+                                <i class="text-black fas fa-sync ml-2"></i>
+                            </div>
+                            <!-- to -->
+                            <div class="col-span-1">
+                                <input v-model="formData.to" type="text"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="目的地" />
+                            </div>
+                            <!-- depart -->
+                            <div class="col-span-1">
+                                <input v-model="formData.depart" type="date"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
+                                    placeholder="depart" />
+                            </div>
+                            <!--  way -->
+                            <div class="col-span-1">
+                                <select v-model="formData.inputWay"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    <option selected>直达</option>
+                                    <option>转机</option>
+                                </select>
+                            </div>
+                            <!-- passengers -->
+                            <div class="col-span-1">
+                                <select v-model="formData.passengers"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    <option selected>1人</option>
+                                    <option>2人</option>
+                                    <option>3人</option>
+                                </select>
+                            </div>
 
+                            <!-- type -->
+                            <div class="col-span-1">
+                                <select v-model="formData.type"
+                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
+                                    <option selected>经济</option>
+                                    <option>商务</option>
+                                </select>
+                            </div>
+                            <!-- button -->
+                            <div class="col-span-2 md:col-span-1">
+                               <button v-on:click="searchFlights" type="button"
+                                    class="search-btn text-white min-h-[48px] w-full text-[15px] py-[5px] px-[30px] bg-blue-600 hover:opacity-90 rounded-md">查询
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <!-- body portion -->
             <div class="grid grid-cols-12 gap-4 mt-10 ">
                 <!-- filter -->
                 <div class="col-span-12 lg:col-span-3 md:pl-0 bg-[#F6F6F6] dark:bg-transparent">
                     <div class="h-full rounded-md border border-[#E1E6EA] dark:border-[#555669] pb-4">
                         <div class="text-white bg-[#404156] dark:bg-[#282836] rounded p-8 text-center">
-                            <h3 class="text-[28px] leading-[1px] font-medium mb-0">FILTERS</h3>
+                            <h3 class="text-[28px] leading-[1px] font-medium mb-0">筛选</h3>
                         </div>
 
                         <form action="">
@@ -86,20 +183,19 @@ async function fetchFlights(queryParams) {
                                 <a id="travel4BTN"
                                     class="p-3 lg:p-6 w-full text-start flex justify-between items-center focus:shadow-none"
                                     href="#!">
-                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">Price Range
+                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">价格范围
                                     </h5>
                                     <span class="fas fa-chevron-down"></span>
                                 </a>
                                 <div id="travel4Modal">
                                     <div class="px-3 lg:px-4 lg:pb-4 mt-3">
                                         <div class="mb-2">
-                                            <label class="font-bold mb-2 opacity-75">Min
-                                                Price($200)</label>
+                                            <label class="font-bold mb-2 opacity-75">最低价(￥100)</label>
                                             <input type="range"
                                                 class="h-2 w-full bg-[#DEE2E6] appearance-none rounded-sm" />
                                         </div>
                                         <div class="mb-2">
-                                            <label class="font-bold mb-2 opacity-75">Max Price($2000)</label>
+                                            <label class="font-bold mb-2 opacity-75">最高价(￥2000)</label>
                                             <input type="range"
                                                 class="h-2 w-full bg-[#DEE2E6] appearance-none rounded-sm" />
                                         </div>
@@ -112,7 +208,7 @@ async function fetchFlights(queryParams) {
                                 <a id="travel4BTN2"
                                     class="p-3 lg:p-6 w-full text-start flex justify-between items-center focus:shadow-none"
                                     href="#!">
-                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">Depart Time
+                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">起飞时间
                                     </h5>
                                     <span class="fas fa-chevron-down"></span>
                                 </a>
@@ -120,48 +216,20 @@ async function fetchFlights(queryParams) {
                                     <div class="px-3 lg:px-4 lg:pb-4 mt-4">
                                         <button
                                             class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">
-                                            <i class="fas fa-cloud-sun mr-6"></i>Before 6 am
+                                            <i class="fas fa-cloud-sun mr-6"></i>6点之前
                                         </button>
                                         <button
                                             class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
-                                            <i class="fas fa-cloud-moon mr-6"></i>Before 6 am
+                                            <i class="fas fa-cloud-moon mr-6"></i>12点之前
                                         </button>
                                         <button
                                             class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
-                                            <i class="fas fa-cloud mr-6"></i>Before 6 am
+                                            <i class="fas fa-cloud mr-6"></i>18点之前
                                         </button>
                                         <button
                                             class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
-                                            <i class="fas fa-sun mr-6"></i>Before 6 am
+                                            <i class="fas fa-sun mr-6"></i>24点之前
                                         </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- stops -->
-                            <div>
-                                <a id="travel4BTN3"
-                                    class="p-3 lg:p-6 w-full text-start flex justify-between items-center focus:shadow-none"
-                                    href="#!">
-                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">Stops</h5>
-                                    <span class="fas fa-chevron-down"></span>
-                                </a>
-                                <div id="travel4Modal3">
-                                    <div class="px-3 lg:px-4 lg:pb-4 mt-4">
-                                        <div class="grid grid-cols-12 gap-4">
-                                            <div class="col-span-4">
-                                                <button
-                                                    class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">0</button>
-                                            </div>
-                                            <div class="col-span-4">
-                                                <button
-                                                    class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">1</button>
-                                            </div>
-                                            <div class="col-span-4">
-                                                <button
-                                                    class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">2+</button>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +239,7 @@ async function fetchFlights(queryParams) {
                                 <a id="travel4BTN4"
                                     class="p-3 lg:p-6 w-full text-start flex justify-between items-center focus:shadow-none"
                                     href="#!">
-                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">Airlines
+                                    <h5 class="mb-0 font-medium text-[20px] text-[#28303B] dark:text-white">航空公司
                                     </h5>
                                     <span class="fas fa-chevron-down peer"></span>
                                 </a>
@@ -271,22 +339,22 @@ async function fetchFlights(queryParams) {
                                     </div>
                                     <!-- time -->
                                     <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.departure_hour }}:{{ flight.departure_minute }}</h4>
-                                        <p class="mb-1 mt-2 opacity-50">{{flight.arrival_month}}月{{ flight.arrival_day }}日, {{ flight.arrival_weekday_name }}</p>
+                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.departureParsed.hour }}:{{ flight.departureParsed.minute }}</h4>
+                                        <p class="mb-1 mt-2 opacity-50">{{flight.departureParsed.month }}月{{ flight.departureParsed.day }}日, {{ flight.departureParsed.weekdayName }}</p>
                                         <p class="mb-0 opacity-100 font-bold text-[16px]">{{ flight.departure_city }}</p>
                                     </div>
                                     <!-- stops -->
                                     <div class="text-center col-span-6 sm:col-span-3">
-                                        <p class="mb-0 opacity-50">31h 10m</p>
+                                        <p class="mb-0 opacity-50">历时{{ flight.duration.hours }}时{{ flight.duration.minutes }}分</p>
                                         <hr
                                             class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        <p class="mb-0 opacity-50">2 Stops</p>
+                                        
                                     </div>
 
                                     <!-- time -->
                                     <div class="text-center col-span-6 sm:col-span-3">
-                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.arrival_hour }}:{{ flight.arrival_minute }}</h4>
-                                        <p class="mb-1 mt-2 opacity-50">{{flight.arrival_month}}月{{ flight.arrival_day }}日, {{ flight.arrival_weekday_name }}</p>
+                                        <h4 class="text-[28px] md:text-[32px] font-medium">{{ flight.arrivalParsed.hour }}:{{ flight.arrivalParsed.minute }}</h4>
+                                        <p class="mb-1 mt-2 opacity-50">{{flight.arrivalParsed.month }}月{{ flight.arrivalParsed.day }}日, {{ flight.arrivalParsed.weekdayName }}</p>
                                         <p class="mb-0 opacity-100 font-bold text-[16px]">{{ flight.arrival_city }}</p>
                                     </div>
                                 </div>
@@ -295,9 +363,9 @@ async function fetchFlights(queryParams) {
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
                                     <h2 class="text-[32px] font-bold mb-1">￥{{ flight.price }}</h2>
-                                    <button
+                                    <router-link :to="`/ticket/verify/${flight.id}`"
                                         class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
-                                    </button>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>
@@ -310,7 +378,9 @@ async function fetchFlights(queryParams) {
     </section>
 </template>
 <style scoped>
-
+.searchbox {
+    margin-top: 20px;
+}
 </style>
 
 

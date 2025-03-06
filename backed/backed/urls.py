@@ -25,4 +25,5 @@ urlpatterns = [
     path('back/flights/', flights_views.get_flights, name='get_flights'),
     path('api/register/',user_views.register),
     path('api/login/',user_views.login),
+    path('api/user/<int:user_id>/', user_views.get_user_token),
 ]
