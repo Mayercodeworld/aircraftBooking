@@ -74,6 +74,7 @@ def login(request):
         user = UserInfo.objects.filter(email=head_email).first()
         if user:
             # 获取存储的 salt 和 db_hash_password
+            db_id = user.id
             db_salt = user.salt
             db_hash_password = user.password
             # 让前端传入的密码也形成hash之后的密码
@@ -81,7 +82,7 @@ def login(request):
 
             # 比较生成的 head_hash_password 和存储的 db_hash_password
             if head_hash_password == db_hash_password:
-                return JsonResponse({'code': 0, 'msg': '登录成功'}, status=200)
+                return JsonResponse({'code': 0, 'msg': '登录成功', 'id': db_id, 'token': head_hash_password}, status=200)
             else:
                 return JsonResponse({'code': 1, 'msg': '电子邮件或密码错误'}, status=400)
         else:
@@ -93,3 +94,12 @@ def login(request):
         print(e)
         return JsonResponse({'code': 1, 'msg': '登录失败'}, status=500)
 
+def get_user_token(request, user_id):
+    try:
+        user = UserInfo.objects.get(id=user_id)
+        return JsonResponse({'password': user.password}, status=200)
+    except UserInfo.DoesNotExist:
+        return JsonResponse({'code': 1, 'msg': '用户不存在'}, status=404)
+    except Exception as e:
+        print(e)
+        return JsonResponse({'code': 1, 'msg': '获取用户信息失败'}, status=500)

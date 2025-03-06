@@ -2,12 +2,12 @@
 import { ref, onMounted } from 'vue';
 import {useAuthStore} from '../stores/user_store.js'
 import axios  from "axios";
+import Cookies from 'js-cookie';
 const authStore = useAuthStore();
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
-
 
 onMounted(() => {
 });
@@ -62,12 +62,16 @@ const handleSubmit = (event) => {
     event.preventDefault();  // 阻止表单的默认提交行为
     let request = {
       email: email.value,
+      token:authStore.getToken(),
       password: password.value,
     };
     axios.post('http://127.0.0.1:8000/api/login/', request)
       .then(response => {
         if (response.data.code === 0) {
           alert('登录成功');
+          // token应该存放在浏览器的cookie中
+          Cookies.set('token', response.data.token);
+          Cookies.set('user_id', response.data.id);
           ClearForm();
           window.location.href = '/';
         } else {

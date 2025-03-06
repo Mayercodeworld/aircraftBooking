@@ -1,22 +1,47 @@
 <script setup>
 import {useAuthStore} from '../stores/user_store.js'
-import {onMounted} from "vue";
+import {ref,onMounted} from "vue";
+
 const authStore = useAuthStore()
 
-onMounted(() => {
+const token = ref('')
+const userid = ref('')
+const isLoggedIn = ref(false);
 
+onMounted(async () => {
+  getCookie();
+  isLoggedIn.value = await authStore.CheckLogin();  // 使用 await 获取 CheckLogin 的结果
+  console.log("isLoggedIn: ", isLoggedIn.value);
+  console.log('authStore.CheckLogin() ', isLoggedIn.value);
 });
-// const Log_in_or_out =  () => {
-//   console.log(authStore.isLoginMode)
-//   if (authStore.isLoginMode === false) {
-//     // 跳转到登录页面
-//     window.location.href = '/login'
-//   }
-//   if(authStore.isLoginMode){
-//     authStore.setLoginMode(false)
-//     window.location.href = '/'
-//   }
-// }
+
+const getCookie = () => {
+  token.value = authStore.getToken()
+  userid.value = authStore.getUserId()
+  console.log("token: ",token.value);
+  console.log("userid: ",userid.value);
+}
+
+const CookieLogIn = async () => {
+  const isLoggedIn = await authStore.CheckLogin();
+  if (isLoggedIn.value) {
+    // 登录成功，可以在这里更新 UI 或进行其他操作
+  } else {
+    // 登录失败，可以在这里更新 UI 或进行其他操作
+  }
+}
+
+const handle = async () => {
+  if (!isLoggedIn.value) {
+    window.location.href = '/login';
+  } else {
+    authStore.clearCookies();
+    isLoggedIn.value = false;
+    console.log("已经登录，可以选择退出");
+    window.location.href = '/';
+  }
+};
+
 </script>
 
 <template>
@@ -35,17 +60,17 @@ onMounted(() => {
         <a class="mr-5 hover:text-gray-900">文档</a>
       </nav>
       <div class="login">
-<!--        <button @click="Log_in_or_out" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">-->
-<!--          {{ authStore.isLoginMode ? '退出' : '登录' }}-->
-<!--          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">-->
-<!--            <path d="M5 12h14M12 5l7 7-7 7"></path>-->
-<!--          </svg>-->
-<!--        </button>-->
-        <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">登录
-        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-        </router-link>
+        <button @click="handle" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
+          {{isLoggedIn ? '退出' : '登录'}}
+          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
+<!--        <router-link to="/login" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">登录-->
+<!--        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">-->
+<!--          <path d="M5 12h14M12 5l7 7-7 7"></path>-->
+<!--        </svg>-->
+<!--        </router-link>-->
       </div>
 
     </div>
