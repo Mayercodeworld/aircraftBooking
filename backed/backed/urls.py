@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path
 from flights import views as flights_views
 from user import views as user_views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('back/update/', flights_views.update_flights, name='update_flight'),

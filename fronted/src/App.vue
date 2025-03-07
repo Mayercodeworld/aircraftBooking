@@ -4,6 +4,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import Footer from './components/Footer.vue';
 import Header from './components/Header.vue';
 
+
 var show = ref(true);
 const headerTop = ref('-98px');
 const router = useRouter();
@@ -47,4 +48,5 @@ header {
   transition: all 0.3s ease-in-out; /* 添加过渡效果 */
   z-index: 100;
 }
+
 </style>

@@ -21,6 +21,23 @@ const ClearForm = () => {
   email.value = '';
   password.value = '';
 };
+// 定义加密函数
+// const encrypted = (token, text) => {
+//   const textHash = CryptoJS.SHA256(text).toString();
+//   const hashText = CryptoJS.SHA256(token + textHash).toString();
+//   return hashText;
+// };
+
+// const encrypted_text = (token, id, name, email) => {
+//   // 创建一个对象，包含要加密的数据
+//   const dataToEncrypt = {
+//     id: encrypted(token, id),
+//     name: encrypted(token, name),
+//     email: encrypted(token, email),
+//   };
+//   return dataToEncrypt;
+// };
+
 
 const handleSubmit = (event) => {
   event.preventDefault();  // 阻止表单的默认提交行为
@@ -69,9 +86,18 @@ const handleSubmit = (event) => {
       .then(response => {
         if (response.data.code === 0) {
           alert('登录成功');
+          //加密文本
+          // const encryptedData = authStore.encrypt_text(response.data.token,response.data.id, response.data.name, response.data.email);
+          // console.log('encryptedData: ',encryptedData);
           // token应该存放在浏览器的cookie中
           Cookies.set('token', response.data.token);
           Cookies.set('user_id', response.data.id);
+          Cookies.set('user_name', response.data.name);
+          Cookies.set('user_email', response.data.email);
+          // Cookies.set('user_id', encryptedData.id);
+          // Cookies.set('user_name', encryptedData.name);
+          // Cookies.set('user_email', encryptedData.email);
+          // console.log(response.data);
           ClearForm();
           window.location.href = '/';
         } else {

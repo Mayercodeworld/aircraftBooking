@@ -11,11 +11,17 @@ npm镜像
 Django中创建应用
     python manage.py startapp goods
 
+Django中创建超级用户
+    python manage.py createsuperuser   //创建完成就可以登录sqlite
+
 Django中数据
     python manage.py makemigrations
 
 Django对数据迁移
     python manage.py migrate
+
+安装加密库
+    npm install crypto-js
 
 vue运行
     cd fronted
