@@ -300,5 +300,51 @@ const num = ref(0);
             </div>
         </div>
     </section>
+    <section
+  class="ezy__eporder1 light py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10"
+>
+  <div class="container px-4 mx-auto">
+    <div class="flex justify-center max-w-md mx-auto">
+      <div class="bg-gray-100 dark:bg-slate-800 rounded-md overflow-hidden">
+        <div class="bg-slate-200 dark:bg-slate-700 relative p-6">
+          <div
+            class="absolute top-4 right-4 w-8 h-8 rounded-full cursor-pointer border border-black dark:border-white flex justify-center items-center"
+          >
+            <i class="fas fa-times"></i>
+          </div>
+          <h5 class="text-xl font-bold">Course Cloud Certificate</h5>
+          <h6 class="font-medium opacity-60">TOTAL BILLED: $54</h6>
+        </div>
+        <div class="text-center py-12 px-4">
+          <div
+            class="relative left-1/2 -translate-x-1/2 w-10 h-10 text-[22px] rounded-full border border-blue-600 text-blue-600 flex justify-center items-center"
+          >
+            <i class="fas fa-check"></i>
+          </div>
+          <h1 class="text-2xl font-bold leading-none my-4">
+            Your Certificate Order is Successful
+          </h1>
+          <p class="text-base opacity-80 px-12">
+            In purus donec ac in nulla lobortis. Lectus massa erat odio
+            turpis nulla sed.
+          </p>
+          <button
+            class="bg-blue-600 text-white hover:bg-opacity-90 rounded-md px-6 py-3 mt-6 mb-3"
+          >
+            Back to Courses
+          </button>
+        </div>
+        <div class="bg-slate-200 dark:bg-slate-700 text-center p-6">
+          <div class="flex items-center justify-center">
+            <i class="fas fa-lock mr-2"></i>
+            <b>Secured with SSL</b>
+          </div>
+          <b>Have a question? 0123 4567 891</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 </template>
 
