@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('back/update/', flights_views.update_flights, name='update_flight'),
     path('back/flights/', flights_views.get_flights, name='get_flights'),
+    path('back/flights/<int:flight_id>/', flights_views.get_flight, name='get_flight'),
     path('api/register/',user_views.register),
     path('api/login/',user_views.login),
     path('api/user/<int:user_id>/', user_views.get_user_token),

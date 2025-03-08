@@ -70,7 +70,7 @@ def login(request):
 
         # 这里可以添加验证逻辑，例如检查字段是否为空
         if not head_email or not head_password:
-            return JsonResponse({'code': 1, 'msg': '所有字段都是必填项'}, status=400)
+            return JsonResponse({'code': 1, 'msg': '所有字段都是必填项'}, status=401)
         # 检查用户是否存在
         user = UserInfo.objects.filter(email=head_email).first()
         if user:
@@ -78,19 +78,21 @@ def login(request):
             db_id = user.id
             db_salt = user.salt
             db_hash_password = user.password
+            db_name = user.name
+            db_email = user.email
             # 让前端传入的密码也形成hash之后的密码
             head_hash_password = create_hash_password(head_password,db_salt)
 
             # 比较生成的 head_hash_password 和存储的 db_hash_password
             if head_hash_password == db_hash_password:
-                return JsonResponse({'code': 0, 'msg': '登录成功', 'id': db_id, 'token': head_hash_password}, status=200)
+                return JsonResponse({'code': 0, 'msg': '登录成功', 'id': db_id, 'token': head_hash_password, 'name': db_name, 'email': db_email}, status=200)
             else:
-                return JsonResponse({'code': 1, 'msg': '电子邮件或密码错误'}, status=400)
+                return JsonResponse({'code': 1, 'msg': '电子邮件或密码错误'}, status=402)
         else:
-            return JsonResponse({'code': 1, 'msg': '电子邮件或密码错误'}, status=400)
+            return JsonResponse({'code': 1, 'msg': '电子邮件或密码错误'}, status=403)
 
     except json.JSONDecodeError:
-        return JsonResponse({'code': 1, 'msg': '无效的JSON格式'}, status=400)
+        return JsonResponse({'code': 1, 'msg': '无效的JSON格式'}, status=405)
     except Exception as e:
         print(e)
         return JsonResponse({'code': 1, 'msg': '登录失败'}, status=500)

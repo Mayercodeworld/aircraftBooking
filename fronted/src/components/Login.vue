@@ -72,6 +72,8 @@ const handleSubmit = (event) => {
           // token应该存放在浏览器的cookie中
           Cookies.set('token', response.data.token);
           Cookies.set('user_id', response.data.id);
+          Cookies.set('user_name', response.data.name);
+          Cookies.set('user_email', response.data.email);
           ClearForm();
           window.location.href = '/';
         } else {

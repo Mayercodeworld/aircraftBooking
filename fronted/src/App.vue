@@ -8,6 +8,7 @@ var show = ref(true);
 const headerTop = ref('-98px');
 const router = useRouter();
 
+// 检测路由进入login时，置show为false
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     show.value = false;
@@ -44,7 +45,7 @@ header {
   height: 8vh;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.7);
-  transition: all 0.3s ease-in-out; /* 添加过渡效果 */
+  transition: all 0.4s ease-in-out; /* 添加过渡效果 */
   z-index: 100;
 }
 </style>

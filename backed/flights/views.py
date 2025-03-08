@@ -13,7 +13,12 @@ def update_flights(request):
         flight = flight_form.save()
         serializer = FlightSerializer(flight)
         return Response(serializer.data)
-    
+@api_view(['GET'])
+def get_flight(request, flight_id):
+    flight = Flight.objects.get(id=flight_id)
+    serializer = FlightSerializer(flight)
+    return Response(serializer.data)    
+
 @api_view(['GET', 'POST'])    
 def get_flights(request):
     if request.method == 'GET':

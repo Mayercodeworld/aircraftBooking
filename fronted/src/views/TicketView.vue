@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { formData } from '@/stores/formdata';
+import { ref, onMounted } from 'vue';
+import { formData} from '@/stores/formdata';
 import axios from 'axios';
 
 const depart = ref();
@@ -361,17 +361,16 @@ onMounted(() => {
                             </div>
                             <div class="col-span-12 lg:col-span-2 lg:pl-0">
                                 <div
-                                    class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
+                                    class="rightbox bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
                                     <h2 class="text-[32px] font-bold mb-1">￥{{ flight.price }}</h2>
                                     <router-link :to="`/ticket/verify/${flight.id}`"
                                         class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
                                     </router-link>
+                                    <span class="remainbox">剩{{ flight.remaining_tickets }}张</span>
                                 </div>
                             </div>
                         </div>
-                   
                     </div>
-
                 </div>
             </div>
         </div>
@@ -380,6 +379,15 @@ onMounted(() => {
 <style scoped>
 .searchbox {
     margin-top: 20px;
+}
+.rightbox {
+    position: relative;
+}
+.rightbox .remainbox {
+    position: absolute;
+    color: #fff;
+    right: 0;
+    background-color: #FF9900;
 }
 </style>
 
