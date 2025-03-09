@@ -40,3 +40,17 @@ backed/user/__pycache__/views.cpython-312.pyc
 backed/backed/__pycache__/urls.cpython-312.pyc
 backed/backed/__pycache__/settings.cpython-312.pyc
 backed/db.sqlite3
+backed/flights/migrations/__pycache__/0003_alter_flight_id.cpython-312.pyc
+backed/orders/__pycache__/serializers.cpython-312.pyc
+backed/orders/migrations/0002_order_flight_id_alter_order_date_and_more.py
+backed/orders/migrations/0003_rename_flight_id_order_flight_and_more.py
+backed/orders/migrations/__pycache__/0002_order_flight_id_alter_order_date_and_more.cpython-312.pyc
+backed/orders/migrations/__pycache__/0003_rename_flight_id_order_flight_and_more.cpython-312.pyc
+fronted/src/assets/photos/sanya/VCG211333916660.jpg
+fronted/src/assets/photos/sanya/VCG211356796441.jpg
+.gitignore
+fronted/src/assets/photos/sanya/VCG211331611852.jpg
+fronted/src/assets/photos/sanya/VCG211346951948.jpg
+backed/flights/migrations/0003_alter_flight_id.py
+backed/backed/__pycache__/urls.cpython-312.pyc
+backed/db.sqlite3

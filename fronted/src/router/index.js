@@ -30,8 +30,8 @@ const router = createRouter({
       component: () => import('../views/VerifyView.vue'),
     },
     {
-      path: '/UserTicketsView',
-      name: 'UserTicketsView',
+      path: '/mystickets',
+      name: 'mystickets',
       component: () => import('../views/UserTicketsView.vue'),
     },
     {

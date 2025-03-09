@@ -1,6 +1,7 @@
 <script setup>
 import {ref, onMounted} from 'vue';
 import { useRoute } from 'vue-router';
+import {useAuthStore} from '../stores/user_store.js';
 import axios from 'axios';
 import router from '@/router';
 
@@ -14,7 +15,11 @@ const flight = ref([]);
 const flightId = ref(route.params.id);
 const loading = ref(true);
 const isPaid = ref(false);
+const countdown = ref(5);
+const authStore = useAuthStore();
 const formData = ref({
+    user: authStore.user_id,
+    flight: flightId.value,
     name: '',
     age: '',
     gender: '',
@@ -48,10 +53,27 @@ function submit() {
     }
     console.log(formData.value)
 }
-function pay() {
-    isPaid.value = true;
+async function pay() {
+    try {
+        const totalPrice = parseFloat(flight.value.price) + (num.value * 80) + insprice.value;
+        formData.value.price = totalPrice;
+        // console.log(formData.value);
+        const response = await axios.post('http://localhost:8000/api/order/create/', formData.value);
+        // console.log('Order created:', response.data);
+        isPaid.value = true;
 
-    
+        // 启动倒计时
+        let interval = setInterval(() => {
+            countdown.value--;
+            if (countdown.value <= 0) {
+                clearInterval(interval);
+                router.push('/tickets');
+            }
+        }, 1000);
+    } catch (error) {
+        console.error('Error creating order:', error);
+        showModal2.value = true;
+    }
 }
 async function searchFlightById() {
     try {
@@ -430,11 +452,11 @@ onMounted(() => {
                         <h1 class="text-2xl font-bold leading-none my-4">
                             支付成功
                         </h1>
+                        <p class="text-base opacity-80 px-12">{{ countdown }}秒后自动返回上一个页面</p>
                         <p class="text-base opacity-80 px-12">
-                            <!-- In purus donec ac in nulla lobortis. Lectus massa erat odio
-                            turpis nulla sed. -->
                             您已支付成功，前往<router-link to="/user/tickets" style="color: blue;">我的行程</router-link>中确认订单？
                         </p>
+                        
                     </div>
                     <div v-else>
                         <h1 class="text-2xl font-bold leading-none my-4">
@@ -470,7 +492,10 @@ onMounted(() => {
                 <div class="px-4 py-2 -mx-3">
                     <div class="mx-3">
                         <span class="font-semibold text-yellow-400 dark:text-yellow-300">警告</span>
-                        <p class="text-sm text-gray-600 dark:text-gray-200">
+                        <p v-if="showModal1" class="text-sm text-gray-600 dark:text-gray-200" >
+                            您已购买该机票，请勿重复购买。
+                        </p>
+                        <p v-else>
                             请输入姓名和身份证等重要信息。
                         </p>
                     </div>
@@ -524,7 +549,7 @@ onMounted(() => {
     z-index: 1000;
 }
 .modal-overlay2 .box {
-    width: 400px;
-    height: 85px;
+    width: 500px;
+    height: 100px;
 }
 </style>

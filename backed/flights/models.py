@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Flight(models.Model):
+    id = models.AutoField(primary_key=True)
     flight_no = models.CharField(max_length=10, unique=True)
     departure_city = models.CharField(max_length=100)
     arrival_city = models.CharField(max_length=100)

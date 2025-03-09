@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/login/', user_views.login),
     path('api/user/<int:user_id>/', user_views.get_user_token),
     path('api/user/<int:user_id>/tickets/', order_views.get_user_tickets),
+    path('api/order/create/', order_views.create_order),
     path('api/user/update/', user_views.update_user_info),
     path("api/user/forget/", user_views.forget_password),
 ]
