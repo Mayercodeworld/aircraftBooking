@@ -1,6 +1,16 @@
 <script setup>
+import { ref } from 'vue';
 import Search from '@/components/Search.vue';
-
+const destinations = ref([
+  { id: 1, name: 'Toledo', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_1.png', price: 325 },
+  { id: 2, name: 'Noonu Atoll', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_2.png', price: 325 },
+  { id: 3, name: 'Toledo', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_3.png', price: 325 },
+  { id: 4, name: 'Kaafu Atoll', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_4.png', price: 325 },
+  { id: 5, name: 'Barcelona', country: 'Spain', image: 'https://cdn.easyfrontend.com/pictures/search1_5.png', price: 325 },
+  { id: 6, name: 'Hiroshima', country: 'Japan', image: 'https://cdn.easyfrontend.com/pictures/search1_6.png', price: 325 },
+  { id: 7, name: 'Tibidabo', country: 'Barcelona', image: 'https://cdn.easyfrontend.com/pictures/search1_7.png', price: 325 },
+  { id: 8, name: 'Brussels', country: 'Belgium', image: 'https://cdn.easyfrontend.com/pictures/search1_8.png', price: 325 },
+]);
 </script>
 
 <template>
@@ -24,140 +34,27 @@ import Search from '@/components/Search.vue';
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-12 gap-4">
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_1.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Toledo</h5>
-                            <p class="text-[14px] opacity-50 mb-0">United State</p>
-                        </div>
+          <div class="grid grid-cols-12 gap-4">
+            <!-- item -->
+            <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1" v-for="(destination, index) in destinations" :key="index">
+              <router-link :to="{ name: 'Travel', params: { id: destination.id } }">
+                <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
+                  <div class="relative">
+                    <img :src="destination.image" alt="" class="w-full h-auto" />
+                    <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
+                      <h6 class="mb-0 font-normal">From ${{ destination.price }}</h6>
                     </div>
+                  </div>
+                  <div class="p-4">
+                    <h5 class="font-medium text-[20px] mb-1">{{ destination.name }}</h5>
+                    <p class="text-[14px] opacity-50 mb-0">{{ destination.country }}</p>
+                  </div>
                 </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_2.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Noonu Atoll</h5>
-                            <p class="text-[14px] opacity-50 mb-0">United State</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_3.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Toledo</h5>
-                            <p class="text-[14px] opacity-50 mb-0">United State</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_4.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Kaafu Atoll</h5>
-                            <p class="text-[14px] opacity-50 mb-0">United State</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_5.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Barcelona</h5>
-                            <p class="text-[14px] opacity-50 mb-0">Spain</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_6.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Hiroshima</h5>
-                            <p class="text-[14px] opacity-50 mb-0">Japan</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_7.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Tibidabo</h5>
-                            <p class="text-[14px] opacity-50 mb-0">Barcelona</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- item -->
-                <div class="col-span-12 md:col-span-6 lg:col-span-3 px-1">
-                    <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
-                        <div class="relative">
-                            <img src="https://cdn.easyfrontend.com/pictures/search1_8.png" alt=""
-                                class="w-full h-auto" />
-                            <div class="absolute top-4 right-4 bg-[#414257] text-white px-3 py-2">
-                                <h6 class="mb-0 font-normal">From $325</h6>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h5 class="font-medium text-[20px] mb-1">Brussels</h5>
-                            <p class="text-[14px] opacity-50 mb-0">Belgium</p>
-                        </div>
-                    </div>
-                </div>
+              </router-link>
             </div>
+          </div>
         </div>
     </section>
-
 </template>
 
 <style scoped>

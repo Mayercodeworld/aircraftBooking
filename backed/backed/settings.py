@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # 添加应用的位置
     'flights',
     'user',
+    'orders',
 
 ]
 

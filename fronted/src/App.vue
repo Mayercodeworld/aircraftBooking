@@ -34,7 +34,6 @@ onUnmounted(() => {
 
 <template>
   <Header v-if="show" :style="{ top: headerTop }" />
-  <!-- <SideBar /> -->
   <RouterView />
   <Footer v-if="show" />
 </template>
