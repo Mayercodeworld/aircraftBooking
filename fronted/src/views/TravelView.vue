@@ -29,17 +29,15 @@ import { useRoute } from 'vue-router';
 
 //   destination.value = destinations.value.find(dest => dest.id === id);
 // };
-
 const currentIndex = ref(0); // 当前显示的第一张图片的索引
 const images = [
-  { src: 'https://vcg00.cfp.cn/creative/vcg/800/new/VCG211380480760.jpg', title: 'Image 1' },
-  { src: 'https://vcg04.cfp.cn/creative/vcg/800/new/VCG211348900152.jpg', title: 'Image 2' },
-  { src: 'https://cdn.easyfrontend.com/pictures/courses/courses_3_3.png', title: 'Image 3' },
-  // { src: 'https://cdn.easyfrontend.com/pictures/courses/courses_3_4.png', title: 'Image 4' },
-  // { src: 'https://cdn.easyfrontend.com/pictures/courses/courses_3_5.png', title: 'Image 5' },
+  { src: 'https://img1.qunarzz.com/travel/d5/1606/78/f159a24f7a0672f7.jpg?color=#2b79bf', title: 'Image 1' },
+  { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },
+  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },
+  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },
+  { src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' },
   // 可以继续添加更多图片
 ];
-
 // 计算当前显示的三个图片
 const currentImages = computed(() => {
   return [
@@ -90,12 +88,12 @@ const nextImage = () => {
                 <div class="rounded-lg overflow-hidden">
                   <div class="relative">
                     <img :src="image.src" alt="" class="w-full" />
-                    <div class="absolute bottom-0 flex flex-col justify-center items-center w-full text-white px-12 pb-6 text-center">
+                    <!-- <div class="absolute bottom-0 flex flex-col justify-center items-center w-full text-white px-12 pb-6 text-center">
                       <h4 class="text-[22px] font-medium">{{ image.title }}</h4>
                       <h5 class="text-[22px] font-medium text-blue-600 my-3">£20</h5>
                       <a href="#" class="bg-transparent hover:bg-blue-600 border border-blue-600 hover:text-white py-2 rounded transition text-blue-600 px-9 mb-3">Add To Cart</a>
                       <p class="text-base opacity-80">PDF Format</p>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>

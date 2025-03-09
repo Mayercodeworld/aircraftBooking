@@ -32,29 +32,14 @@ const closeModal = () => {
                     <div class="grid grid-cols-12 gap-4 relative">
                         <div
                             class="col-span-12 lg:col-span-10 lg:col-start-2 xl:col-span-8 xl:col-start-3 text-center mb-4">
-                            <h2 class="font-bold text-[39px] lg:text-[80px] mb-4">Your Journey Begins</h2>
+                            <h2 class="font-bold text-[39px] lg:text-[80px] mb-4">云端之梦，一触即达</h2>
                             <div class="grid grid-cols-12">
                                 <div class="col-span-12 lg:col-span-10 lg:col-start-2 xl:col-span-8 xl:col-start-3">
                                     <p class="text-[18px] leading-[32px] opacity-70 text-center">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-                                        posuere ipsum molestie sem
-                                        volutpat, non imperdiet leo porttitor. Nullam tortor nibh, dictum
-                                        vitae porttitor eu,
-                                        pharetra nec tellus.
+                                        踏遍千山万水，收集世间温柔
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                        <div
-                            class="absolute -bottom-[65px] lg:bottom-0 lg:top-1/2 left-1/2 lg:left-0 lg:right-0 transform -translate-x-1/2 lg:translate-x-0 lg:-translate-y-1/2 flex justify-between opacity-60">
-                            <button
-                                class="h-[60px] w-[60px] rounded-full border border-white hover:border-blue-500 text-white hover:text-blue-500 transition ease-in-out duration-500 flex justify-center items-center cursor-pointer mr-4 lg:mr-0">
-                                <span class="text-xl"><</span>
-                            </button>
-                            <button
-                                class="h-[60px] w-[60px] rounded-full border border-white hover:border-blue-500 text-white hover:text-blue-500 transition ease-in-out duration-500 flex justify-center items-center cursor-pointer">
-                                <span class="text-xl">></span>
-                            </button>
                         </div>
                     </div>
 
