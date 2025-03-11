@@ -17,6 +17,10 @@ Django中数据
 Django对数据迁移
     python manage.py migrate
 
+Django想要通过admin（drf）来管理数据时
+    创建超级用户
+        python manage.py createsuperuser
+
 vue运行
     cd fronted
     npm run dev

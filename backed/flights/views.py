@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from .models import Flight
 from .forms import FlightForm
 from .serializers import FlightSerializer
+from .serializers import SeatSerializer
 # Create your views here.
 
 @api_view(['POST'])
@@ -18,6 +20,13 @@ def get_flight(request, flight_id):
     flight = Flight.objects.get(id=flight_id)
     serializer = FlightSerializer(flight)
     return Response(serializer.data)    
+
+@api_view(['GET'])
+def get_seats(request, flight_id):
+    flight = get_object_or_404(Flight, id=flight_id)
+    seats = flight.seats.all()
+    serializer = SeatSerializer(seats, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])    
 def get_flights(request):

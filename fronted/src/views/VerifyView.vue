@@ -1,15 +1,15 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import {useAuthStore} from '../stores/user_store.js';
+import { useAuthStore } from '../stores/user_store.js';
 import axios from 'axios';
 import router from '@/router';
 
 const num = ref(0);
-const showModal1 = ref(false); 
-const showModal2 = ref(false)
+const showModal1 = ref(false);
+const showModal2 = ref(false);
 const selectedInsurance = ref(null);
-const insprice = ref(0)
+const insprice = ref(0);
 const route = useRoute();
 const flight = ref([]);
 const flightId = ref(route.params.id);
@@ -25,8 +25,12 @@ const formData = ref({
     gender: '',
     country: '',
     passportNo: '',
+    seat: null, // 新增座位字段
     price: 0,
-})
+});
+const seats = ref([]);
+const seatLetter = ref(null); // 新增座位字母字段
+
 function checked(event) {
     // 移除之前选中的保险的高亮类
     if (selectedInsurance.value) {
@@ -41,25 +45,39 @@ function checked(event) {
         newSelection.classList.remove('border-transparent');
         selectedInsurance.value = newSelection;
         insprice.value = parseInt(newSelection.querySelector('button').textContent.replace('￥', ''), 10);
-        
     }
 }
-function submit() {
-    if (formData.value.name === '' || formData.value.age === '' || formData.value.gender === '' || formData.value.country === '' || formData.value.passportNo === ''){
-        showModal2.value = !showModal2.value;
+
+function selectSeat(seat) {
+    if (seat.is_booked) {
+        alert('该座位已被预订');
+        return;
     }
-    else{
+    formData.value.seat = seat.id;
+    seats.value.forEach(s => {
+        s.selected = s.id === seat.id;
+    });
+}
+
+function selectSeatLetter(letter) {
+    seatLetter.value = letter;
+}
+
+function submit() {
+    if (formData.value.name === '' || formData.value.age === '' || formData.value.gender === '' || formData.value.country === '' || formData.value.passportNo === '') {
+        showModal2.value = !showModal2.value;
+    } else {
         showModal1.value = !showModal1.value;
     }
-    console.log(formData.value)
+    console.log(formData.value);
 }
+
 async function pay() {
     try {
         const totalPrice = parseFloat(flight.value.price) + (num.value * 80) + insprice.value;
         formData.value.price = totalPrice;
-        // console.log(formData.value);
-        const response = await axios.post('http://localhost:8000/api/order/create/', formData.value);
-        // console.log('Order created:', response.data);
+        formData.value.seat_letter = seatLetter.value; // 添加座位字母到 formData
+        const response = await axios.post('http://localhost:8000/api/order/book/', formData.value);
         isPaid.value = true;
 
         // 启动倒计时
@@ -75,11 +93,11 @@ async function pay() {
         showModal2.value = true;
     }
 }
+
 async function searchFlightById() {
     try {
-        const response = await axios.get(`http://localhost:8000/back/flights/${flightId.value}`);
+        const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}`);
         flight.value = response.data;
-        // console.log(flight.value.price)
     } catch (error) {
         console.error('Error fetching flight:', error);
     } finally {
@@ -87,15 +105,31 @@ async function searchFlightById() {
     }
 }
 
+async function fetchSeats() {
+    try {
+        const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}/seats/`);
+        seats.value = response.data.map(seat => ({
+            ...seat,
+            selected: false,
+            is_booked: seat.is_booked || false // 确保 is_booked 属性存在
+        }));
+    } catch (error) {
+        console.error('Error fetching seats:', error);
+        seats.value = []; // 确保 seats 不为 undefined
+    }
+}
+
 const closeModal = () => {
     showModal2.value = false;
-    document.body.style.overflow = 'auto'; 
+    document.body.style.overflow = 'auto';
 };
 
 onMounted(() => {
     searchFlightById();
-})
+    fetchSeats();
+});
 </script>
+
 <template>
     <section
         class="ezy__travel7 light bg-white dark:bg-[#2E2F41] text-gray-700 dark:text-white py-10 md:p-[100px] overflow-hidden">
@@ -167,6 +201,22 @@ onMounted(() => {
                                     <input type="" v-model="formData.passportNo"
                                         class="min-h-[48px] w-full leading-[36px] bg-transparent border boder-[#BBBFC8] dark:border-[#888993] pl-[24px] focus:outline focus:outline-blue-500 focus:border-none rounded-md opacity-75"
                                         id="passport"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-4 mt-6">
+                        <div class="col-span-12">
+                            <div class="flex items-center mb-4">
+                                <div class="w-[4px] h-[27px] rounded-md bg-[#0D6EFD]"></div>
+                                <h4 class="text-2xl font-bold mb-0 ml-3">选择座位</h4>
+                            </div>
+                            <div class="seat-map grid grid-cols-7 gap-2">
+                                <!-- 添加座位字母选择按钮 -->
+                                <div v-for="letter in ['A', 'B', 'C', 'D', 'E', 'F']" :key="letter" class="seat-letter w-10 h-10 flex items-center justify-center border border-gray-300 rounded cursor-pointer"
+                                    :class="{ 'bg-blue-600 text-white': seatLetter === letter }"
+                                    @click="selectSeatLetter(letter)">
+                                    {{ letter }}
                                 </div>
                             </div>
                         </div>
@@ -505,6 +555,22 @@ onMounted(() => {
     </div>
 </template>
 <style scoped>
+/* .seat {
+    @apply w-10 h-10 flex items-center justify-center border border-gray-300 rounded cursor-pointer;
+}
+
+.seat.booked {
+    @apply bg-gray-400 text-gray-600 cursor-not-allowed;
+}
+
+.seat.selected {
+    @apply bg-blue-600 text-white;
+}
+
+.aisle {
+    @apply col-span-1;
+} */
+
 .submit {
     display: flex;
     margin-top: 50px;

@@ -187,18 +187,20 @@ onMounted(() => {
                                     </h5>
                                     <span class="fas fa-chevron-down"></span>
                                 </a>
-                                <div id="travel4Modal">
-                                    <div class="px-3 lg:px-4 lg:pb-4 mt-3">
-                                        <div class="mb-2">
-                                            <label class="font-bold mb-2 opacity-75">最低价(￥100)</label>
-                                            <input type="range"
-                                                class="h-2 w-full bg-[#DEE2E6] appearance-none rounded-sm" />
-                                        </div>
-                                        <div class="mb-2">
-                                            <label class="font-bold mb-2 opacity-75">最高价(￥2000)</label>
-                                            <input type="range"
-                                                class="h-2 w-full bg-[#DEE2E6] appearance-none rounded-sm" />
-                                        </div>
+                                <div id="travel4Modal2">
+                                    <div class="px-3 lg:px-4 lg:pb-4 mt-4">
+                                        <button
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">
+                                            <i class="fas fa-cloud-sun mr-6"></i>500以下
+                                        </button>
+                                        <button
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                            <i class="fas fa-cloud-moon mr-6"></i>800以下
+                                        </button>
+                                        <button
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                            <i class="fas fa-cloud mr-6"></i>2000以下
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -249,13 +251,13 @@ onMounted(() => {
                                             <div>
                                                 <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
                                                     type="checkbox" value="" />
-                                                <label class="opacity-80"> Aeroflot
+                                                <label class="opacity-80"> 南方航空
                                                 </label>
                                             </div>
                                             <div class="mt-3">
                                                 <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
                                                     type="checkbox" value="" checked />
-                                                <label class="opacity-80"> Aeroflot
+                                                <label class="opacity-80"> 海南航空
                                                 </label>
                                             </div>
                                             <div class="mt-3">
@@ -366,7 +368,7 @@ onMounted(() => {
                                     <router-link :to="`/ticket/verify/${flight.id}`"
                                         class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
                                     </router-link>
-                                    <span class="remainbox">剩{{ flight.remaining_tickets }}张</span>
+                                    <span class="remainbox">剩{{ flight.remaining_seats }}张</span>
                                 </div>
                             </div>
                         </div>

@@ -26,6 +26,16 @@ const get_user_tickets = () => {
     });
   }
 }
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
 </script>
 
 <template>
@@ -33,34 +43,49 @@ const get_user_tickets = () => {
     class="ezy__eporder8 light py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10"
   >
     <div class="container px-4 mx-auto">
-      <div class="flex justify-center max-w-5xl mx-auto">
-        <div class="bg-gray-100 dark:bg-slate-800 p-4 sm:p-8 lg:p-12 w-full">
+      <div class="box1 flex justify-center  mx-auto">
+        <div class="box2 bg-gray-100 dark:bg-slate-800 p-4 sm:p-8 lg:p-12 w-full">
           <table class="table-fixed text-center w-full">
             <thead class="mb-6">
             <tr class="text-lg sm:text-[22px] font-bold py-5">
-              <th class="text-start">Order Id</th>
-              <th>Date</th>
-              <th>Price</th>
-              <th>Status</th>
+              <th class="text-start">订单号</th>
+              <th>出发日期</th>
+              <th>价格</th>
+              <th>状态</th>
+              <th>退订</th>
+              <th>出发地</th>
+              <th>目的地</th>
+              <th></th>
             </tr>
             </thead>
             <tbody class="sm:text-lg font-medium align-baseline">
             <tr v-for="order in orders" :key="order.order_id">
               <td class="text-start py-5">{{ order.order_id }}</td>
-              <td class="py-5">{{ order.date }}</td>
-              <td class="py-5">${{ order.price }}</td>
+              <td class="py-5 px-0">{{ formatDate(order.flight.departure_time) }}</td>
+              <td class="py-5">￥{{ order.price }}</td>
               <td class="flex justify-center py-5">
                   <span
-                    class="w-full max-w-[150px] py-2 px-2.5 rounded-md font-medium text-base text-white"
+                    class="w-full max-w-[150px] py-2 px-2.5 rounded-md font-medium text-base"
                     :class="{
-                      'bg-blue-600 bg-opacity-10': order.status === 'Completed',
-                      'bg-red-600 bg-opacity-10': order.status === 'Failed',
-                      'bg-green-600 bg-opacity-10': order.status === 'In Progress'
-                    }"
-                  >
+                      'bg-blue-600': order.status === '已结束',
+                      'bg-red-600': order.status === '延误',
+                      'bg-green-600': order.status === '等待出行'
+                    }">
                     {{ order.status }}
                   </span>
               </td>
+              <td class="py-5">
+                <span class="bg-red-600 text-white hover:bg-opacity-90 rounded-md px-5 py-2">
+                    退订
+                </span>
+              </td>
+              <td class="py-5">
+                {{ order.flight.departure_city }}
+              </td>
+              <td>
+                {{ order.flight.arrival_city }}
+              </td>
+              <td></td>
             </tr>
             </tbody>
           </table>
@@ -71,4 +96,13 @@ const get_user_tickets = () => {
 </template>
 
 <style scoped>
+.container {
+  width: 100%;
+}
+
+.container .box1 {
+  display: block;
+  width: 90%;
+}
+
 </style>

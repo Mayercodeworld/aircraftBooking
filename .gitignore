@@ -54,3 +54,13 @@ fronted/src/assets/photos/sanya/VCG211346951948.jpg
 backed/flights/migrations/0003_alter_flight_id.py
 backed/backed/__pycache__/urls.cpython-312.pyc
 backed/db.sqlite3
+backed/backed/__pycache__/urls.cpython-312.pyc
+backed/db.sqlite3
+backed/backed/__pycache__/urls.cpython-312.pyc
+backed/flights/migrations/__pycache__/0004_aircraft_alter_flight_capacity_flight_aircraft_seat.cpython-312.pyc
+backed/flights/migrations/0005_remove_flight_capacity_and_more.py
+backed/flights/migrations/0004_aircraft_alter_flight_capacity_flight_aircraft_seat.py
+backed/flights/migrations/__pycache__/0005_remove_flight_capacity_and_more.cpython-312.pyc
+backed/orders/migrations/0004_order_seat_invoice_ticketnotification.py
+backed/orders/migrations/__pycache__/0004_order_seat_invoice_ticketnotification.cpython-312.pyc
+backed/backed/__pycache__/urls.cpython-312.pyc
