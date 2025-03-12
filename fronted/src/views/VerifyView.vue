@@ -15,6 +15,7 @@ const flight = ref([]);
 const flightId = ref(route.params.id);
 const loading = ref(true);
 const isPaid = ref(false);
+const isNull = ref(false);
 const countdown = ref(5);
 const authStore = useAuthStore();
 const formData = ref({
@@ -25,7 +26,6 @@ const formData = ref({
     gender: '',
     country: '',
     passportNo: '',
-    seat: null, // 新增座位字段
     price: 0,
 });
 const seats = ref([]);
@@ -48,16 +48,16 @@ function checked(event) {
     }
 }
 
-function selectSeat(seat) {
-    if (seat.is_booked) {
-        alert('该座位已被预订');
-        return;
-    }
-    formData.value.seat = seat.id;
-    seats.value.forEach(s => {
-        s.selected = s.id === seat.id;
-    });
-}
+// function selectSeat(seat) {
+//     if (seat.is_booked) {
+//         alert('该座位已被预订');
+//         return;
+//     }
+//     formData.value.seat = seat.id;
+//     seats.value.forEach(s => {
+//         s.selected = s.id === seat.id;
+//     });
+// }
 
 function selectSeatLetter(letter) {
     seatLetter.value = letter;
@@ -65,18 +65,29 @@ function selectSeatLetter(letter) {
 
 function submit() {
     if (formData.value.name === '' || formData.value.age === '' || formData.value.gender === '' || formData.value.country === '' || formData.value.passportNo === '') {
-        showModal2.value = !showModal2.value;
+        showModal2.value = true;
+        isNull.value = true;
     } else {
-        showModal1.value = !showModal1.value;
+        isNull.value = false;
+        showModal1.value = true;
     }
     console.log(formData.value);
 }
 
 async function pay() {
     try {
+        // 确保 flight 数据已加载
+        if (!flightId.value) {
+            console.error('Flight data is not loaded or invalid');
+            return;
+        }
+
         const totalPrice = parseFloat(flight.value.price) + (num.value * 80) + insprice.value;
         formData.value.price = totalPrice;
         formData.value.seat_letter = seatLetter.value; // 添加座位字母到 formData
+        // formData.value.flight = flight.value.id; // 确保传递的是 flight_id
+        console.log('formData:', formData.value)
+
         const response = await axios.post('http://localhost:8000/api/order/book/', formData.value);
         isPaid.value = true;
 
@@ -542,10 +553,10 @@ onMounted(() => {
                 <div class="px-4 py-2 -mx-3">
                     <div class="mx-3">
                         <span class="font-semibold text-yellow-400 dark:text-yellow-300">警告</span>
-                        <p v-if="showModal1" class="text-sm text-gray-600 dark:text-gray-200" >
+                        <p v-if="isPaid" class="text-sm text-gray-600 dark:text-gray-200" >
                             您已购买该机票，请勿重复购买。
                         </p>
-                        <p v-else>
+                        <p v-if="isNull">
                             请输入姓名和身份证等重要信息。
                         </p>
                     </div>

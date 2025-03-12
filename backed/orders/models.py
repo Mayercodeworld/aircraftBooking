@@ -24,7 +24,7 @@ class Order(models.Model):
     
     def cancel(self):
         # 更新座位状态
-        self.seat.is_booked = False
+        self.seat.status = 'available'
         self.seat.save()
 
         # 更新订单状态
@@ -32,6 +32,7 @@ class Order(models.Model):
         self.save()
 
     def __str__(self):
+        # 简化了对象的字符串表示，方便调试和日志记录。
         return f"订单： {self.order_id}， 用户： {self.user} 下单时间： {self.date}"
 
     class Meta:
@@ -44,6 +45,7 @@ class TicketNotification(models.Model):
     message = models.TextField()
 
     def __str__(self):
+    # 当你打印TicketNotification对象时，它将调用__str__(self),返回一个字符串，表示该通知的订单ID和发送时间
         return f'订单 {self.order.order_id} 取票通知'
 
 class Invoice(models.Model):

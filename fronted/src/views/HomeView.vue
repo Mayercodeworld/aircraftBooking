@@ -1,9 +1,11 @@
 <script setup>
-import { ref } from 'vue';
+import { ref , onMounted } from 'vue';
 import Search from '@/components/Search.vue';
-
+// import {useAuthStore} from '../stores/user_store.js'
+// const authStore = useAuthStore()
+// const isLoggedIn = ref(false);
 const destinations = ref([
-  { id: 1, name: '三亚', country: '中国', image: 'https://dimg04.c-ctrip.com/images/100t0u000000j7i4o06A5_R_10000_1200.jpg' },
+  { id: 1, name: '三亚', country: '中国', image: 'https://dimg04.c-ctrip.com/images/100t0u000000j7i4o06A5_R_10000_1200.jpg'},
   { id: 2, name: '上海', country: '中国', image: 'https://cdn.pixabay.com/photo/2015/04/20/10/20/shanghai-730892_1280.jpg'},
   { id: 3, name: '广州', country: '中国', image: 'https://cdn.pixabay.com/photo/2017/06/30/08/49/city-2457602_1280.jpg'},
   { id: 4, name: '厦门', country: '中国', image: 'https://youimg1.c-ctrip.com/target/010251200087d87rsC522_D_1600_10000.jpg?proc=autoorient' },
@@ -12,6 +14,18 @@ const destinations = ref([
   { id: 7, name: '伦敦', country: '英国', image: 'https://cdn.pixabay.com/photo/2016/11/15/08/20/big-ben-1825569_1280.jpg'},
   { id: 8, name: '纽约', country: '美国', image: 'https://cdn.easyfrontend.com/pictures/search1_8.png'},
 ]);
+
+// onMounted(async () => {
+//   isLoggedIn.value = await authStore.CheckLogin();  // 使用 await 获取 CheckLogin 的结果
+//   if(isLoggedIn.value)
+//   {
+//     // 发送axios请求，给orders.views.py,这个里面response获取到，response应该是一个列表，因为不知道有多少个飞机即将起飞。
+//     // for循环遍历
+//     // 尊敬的{name}{女生/先生}，您的{ flight no }航班，将在{arrival time}出发，请于{arrival time}前往机场取票，如果超时，后果自负。
+//   }
+//
+// });
+
 </script>
 
 <template>

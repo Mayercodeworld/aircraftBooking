@@ -42,7 +42,7 @@ class Flight(models.Model):
         return (booked_seats / self.aircraft.total_seats) * 100
 
     def __str__(self):
-        return f'航班 {self.flight_no}:  {self.departure_city} 到 {self.arrival_city}'
+        return f'id号：{self.id} 航班 {self.flight_no}:  {self.departure_city} 到 {self.arrival_city}'
 
     class Meta:
         verbose_name = 'Flight'
@@ -104,16 +104,12 @@ class Seat(models.Model):
         if available_seats.exists():
             # 按顺序分配第一个可用座位
             seat_to_book = available_seats.first()
-            seat_to_book.status = 'booked'
-            seat_to_book.save()
             return seat_to_book
         else:
             # 如果没有可用座位，随机分配一个其他座位
             all_available_seats = cls.objects.filter(flight=flight, status='available')
             if all_available_seats.exists():
                 seat_to_book = random.choice(all_available_seats)
-                seat_to_book.status = 'booked'
-                seat_to_book.save()
                 return seat_to_book
             else:
                 raise Exception("所有座位都已被占用")

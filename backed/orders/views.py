@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, OrderCreateSerializer
 from .models import Order
 from flights.models import Flight, Seat  
 
@@ -21,52 +21,55 @@ def get_user_tickets(request, user_id):
     # 返回结果
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 def create_order(request):
-    user_id = request.data.get('user')
-    flight_id = request.data.get('flight')
-    passport_id = request.data.get('passportNo')
+    print('request data:', request.data)
+    user = int(request.data.get('user'))
+    flight = int(request.data.get('flight'))
+    # 一定要注意整形数字
+    request.data['user'] = user
+    request.data['flight'] = flight
     seat_letter = request.data.get('seat_letter')  # 获取用户选择的座位字母
 
-    # 检查是否存在具有相同 user_id, flight_id, passport_id 的订单
-    existing_order = Order.objects.filter(user=user_id, flight=flight_id, passportNo=passport_id).first()
+    # 需要改进筛选方法 
+    existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), stauts='等待出行').first()
     if existing_order:
         return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # 获取航班和可用座位
-    flight = Flight.objects.filter(id=flight_id).first()
+    
+    flight = Flight.objects.filter(id=flight).first()
     if not flight:
         return Response({'code': 1, 'msg': '航班不存在'}, status=status.HTTP_400_BAD_REQUEST)
-
+    
     available_seats = flight.seats.filter(status='available')
-
     if not available_seats.exists():
         return Response({'code': 1, 'msg': '没有可用的座位'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # 选择座位
+    
     if seat_letter:
         seat = Seat.get_sequential_seat(flight, seat_letter)
+        print(seat)
         if not seat:
             return Response({'code': 1, 'msg': '选择的座位不可用'}, status=status.HTTP_400_BAD_REQUEST)
     else:
-        # 如果没有提供座位字母，按顺序分配第一个可用座位
+        # 没有提供座位字母
         seat = available_seats.order_by('seat_number').first()
-        if not seat:
-            return Response({'code': 1, 'msg': '没有可用的座位'}, status=status.HTTP_400_BAD_REQUEST)
-        seat.status = 'booked'
-        seat.save()
-
-    # 更新座位状态
+    
     seat.status = 'booked'
     seat.save()
-
-    # 创建订单
-    request.data['seat'] = seat.id  # 将座位ID添加到请求数据中
-    serializer = OrderSerializer(data=request.data)
+    request.data['seat'] = seat.id
+    serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'code': 0, 'msg': '订单创建成功'},  status=status.HTTP_201_CREATED)
     else:
         # print('Validation errors:', serializer.errors)  # 打印验证错误信息
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def cancel_order(request, order_id):
+    order = Order.objects.filter(order_id=order_id).first()
+    if not order:
+        return Response({'code': 1, 'msg': '订单不存在'}, status=status.HTTP_400_BAD_REQUEST)
+    order.cancel()
+    return Response({'code': 0, 'msg': '订单已取消'},status=status.HTTP_200_OK)
  

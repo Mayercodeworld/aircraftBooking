@@ -2,11 +2,14 @@
 import { ref, onMounted } from 'vue';
 import { formData} from '@/stores/formdata';
 import axios from 'axios';
+import {useAuthStore} from '../stores/user_store.js'
 
+const authStore = useAuthStore();
 const depart = ref();
 const flightsData = ref([]);
 const loading = ref(true);
 const showSearch = ref(false);
+const isLoggedIn = ref(false);
 // 辅助函数：解析日期字符串并提取日期和时间部分
 function parseDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
@@ -56,9 +59,14 @@ async function searchFlights() {
     }
 }
 
-onMounted(() => {
-    searchFlights();
-})
+
+onMounted(async () => { // 声明为 async 函数
+    window.scrollTo({
+    top: 0,
+    });
+    await searchFlights(); // 使用 await 调用异步函数
+    isLoggedIn.value = await authStore.CheckLogin(); // 使用 await 获取 CheckLogin 的结果
+});
 
 // function toggleModal(btnId, modalId) {
 //             const button = document.getElementById(btnId);
@@ -80,6 +88,14 @@ onMounted(() => {
 //         toggleModal(btnId, modalId);
 //     });
 // });
+
+function handleBooking(id) {
+    if (isLoggedIn.value) {
+        window.location.href = `/ticket/verify/${id}`;
+    }else{
+        window.location.href = '/login';
+    }
+}
 </script>
 <template>
     <section
@@ -291,8 +307,7 @@ onMounted(() => {
 
                             <div class="px-4 mt-4">
                                 <button
-                                    class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded w-full">Reset
-                                    All Filters</button>
+                                    class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded w-full">重置所有选项</button>
                             </div>
                         </form>
                     </div>
@@ -304,16 +319,6 @@ onMounted(() => {
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
                             <h4 class="mb-0 font-medium text-[24px] text-[#28303B] dark:text-white">{{ flightsData.length }} 条结果</h4>
-                        </div>
-                        <div class="col-span-12 sm:col-span-6">
-                            <form action="" class="flex items-center sm:justify-end">
-                                <h5 class="font-normal mb-0 mr-6 text-nowrap text-[20px] w-1/2">筛选：</h5>
-                                <select
-                                    class="text-[#20283B] dark:text-white bg-[#F6F6F6] dark:bg-[#404156] border border-[#ffffff1c] py-[6px] pr-[36px] pl-[12px] focus:outline-2 focus:outline-blue-500 focus:border-blue-500 w-full">
-                                    <option selected>成人价</option>
-                                    <option value="1">学生价</option>
-                                </select>
-                            </form>
                         </div>
                     </div>
 
@@ -365,9 +370,9 @@ onMounted(() => {
                                 <div
                                     class="rightbox bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
                                     <h2 class="text-[32px] font-bold mb-1">￥{{ flight.price }}</h2>
-                                    <router-link :to="`/ticket/verify/${flight.id}`"
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
-                                    </router-link>
+                                    <button class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0" @click="handleBooking(flight.id)" >
+                                        预订
+                                    </button>
                                     <span class="remainbox">剩{{ flight.remaining_seats }}张</span>
                                 </div>
                             </div>

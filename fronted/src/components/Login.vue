@@ -117,6 +117,7 @@ const handleSubmit = (event) => {
           Cookies.set('user_name', response.data.name);
           Cookies.set('user_email', response.data.email);
           ClearForm();
+          // 你使用 window.location.href = '/' 进行页面跳转时，浏览器会加载新的页面，这会导致Pinia的状态被重置
           window.location.href = '/';
         } else {
           console.log("出现了一些错误");

@@ -27,6 +27,18 @@ const get_user_tickets = () => {
   }
 }
 
+const cancel_order = (order_id) => {
+  axios.post(`http://127.0.0.1:8000/api/order/${order_id}/cancel/`).then(res => {
+    console.log(res.data.message);
+    // 更新订单状态
+    orders.value = orders.value.map(order => 
+      order.order_id === order_id ? { ...order, status: '已取消' } : order
+    );
+  }).catch(error => {
+    console.error("There was an error canceling the order!", error);
+  });
+}
+
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const year = date.getFullYear();
@@ -48,13 +60,15 @@ const formatDate = (dateString) => {
           <table class="table-fixed text-center w-full">
             <thead class="mb-6">
             <tr class="text-lg sm:text-[22px] font-bold py-5">
-              <th class="text-start">订单号</th>
+              <th >订单号</th>
               <th>出发日期</th>
               <th>价格</th>
               <th>状态</th>
               <th>退订</th>
               <th>出发地</th>
               <th>目的地</th>
+              <th>座位号</th>
+              <th>乘客</th>
               <th></th>
             </tr>
             </thead>
@@ -65,18 +79,21 @@ const formatDate = (dateString) => {
               <td class="py-5">￥{{ order.price }}</td>
               <td class="flex justify-center py-5">
                   <span
-                    class="w-full max-w-[150px] py-2 px-2.5 rounded-md font-medium text-base"
+                    class="w-full max-w-[150px] py-2 px-2.5 text-white rounded-md font-medium text-base"
                     :class="{
                       'bg-blue-600': order.status === '已结束',
-                      'bg-red-600': order.status === '延误',
+                      'bg-red-600': order.status === '已取消',
                       'bg-green-600': order.status === '等待出行'
                     }">
                     {{ order.status }}
                   </span>
               </td>
               <td class="py-5">
-                <span class="bg-red-600 text-white hover:bg-opacity-90 rounded-md px-5 py-2">
-                    退订
+                <span 
+                  class="bg-red-600 text-white hover:bg-opacity-90 rounded-md px-5 py-2 cursor-pointer"
+                  @click="cancel_order(order.order_id)"
+                >
+                  退订
                 </span>
               </td>
               <td class="py-5">
@@ -85,7 +102,12 @@ const formatDate = (dateString) => {
               <td>
                 {{ order.flight.arrival_city }}
               </td>
-              <td></td>
+              <td>
+                {{ order.seat.seat_number }}
+              </td>
+              <td>
+                {{ order.name}}
+              </td>
             </tr>
             </tbody>
           </table>

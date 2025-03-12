@@ -64,3 +64,6 @@ backed/flights/migrations/__pycache__/0005_remove_flight_capacity_and_more.cpyth
 backed/orders/migrations/0004_order_seat_invoice_ticketnotification.py
 backed/orders/migrations/__pycache__/0004_order_seat_invoice_ticketnotification.cpython-312.pyc
 backed/backed/__pycache__/urls.cpython-312.pyc
+backed/backed/__pycache__/urls.cpython-312.pyc
+backed/backed/__pycache__/urls.cpython-312.pyc
+backed/backed/__pycache__/urls.cpython-312.pyc
