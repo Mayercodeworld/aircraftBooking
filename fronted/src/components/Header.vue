@@ -87,7 +87,7 @@ const handle = async () => {
           </button>
         </div>
       </div>
-      
+
 
     </div>
     <Info v-if="info" class="sidebar"/>

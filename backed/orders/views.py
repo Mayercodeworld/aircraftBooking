@@ -3,10 +3,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import OrderSerializer
-from .models import Order
+from .models import Order,UserInfo
 from flights.models import Flight, Seat  
 
 @api_view(['GET'])
+# 获得用户表单
 def get_user_tickets(request, user_id):
     # 根据 user_id 查找所有匹配的 Order 行
     orders = Order.objects.filter(user_id=user_id)
@@ -22,6 +23,7 @@ def get_user_tickets(request, user_id):
     return Response(serializer.data)
 
 @api_view(['POST'])
+#创建订单
 def create_order(request):
     user_id = request.data.get('user')
     flight_id = request.data.get('flight')
@@ -69,4 +71,12 @@ def create_order(request):
     else:
         # print('Validation errors:', serializer.errors)  # 打印验证错误信息
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
- 
+
+
+ # @api_view(['POST'])
+ # # 取票通知
+ # def notice_ticket(request, user_id):
+ #     try:
+ #         user = UserInfo.objects.get(id=user_id)
+ #     except UserInfo.DoesNotExist:
+ #         return Response({'code': 1, 'msg': '用户不存在'}, status=status.HTTP_400_BAD_REQUEST)

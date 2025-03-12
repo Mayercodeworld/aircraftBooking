@@ -3,58 +3,67 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-// const route = useRoute();
-// const id = parseInt(route.params.id, 10); // 将 id 转换为数字类型
+const route = useRoute();
+const id = parseInt(route.params.id, 10); // 将 id 转换为数字类型， 10代表十进制
 
-// const destination = ref(null);
+const images_collections = ref(null);
 
-// onMounted(() => {
-//   // 根据 id 加载数据
-//   loadDestination(id);
-// });
+onMounted(() => {
+  //根据 id 加载数据
+  loadDestination(id);
+});
 
-// const loadDestination = (id) => {
-//   // 这里可以替换为从 API 获取数据的逻辑
-//   // 假设我们有一个静态的数据列表
-//   const destinations = ref([
-//     { id: 1, name: 'Toledo', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_1.png', price: 325, description: 'Description of Toledo' },
-//     { id: 2, name: 'Noonu Atoll', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_2.png', price: 325, description: 'Description of Noonu Atoll' },
-//     { id: 3, name: 'Toledo', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_3.png', price: 325, description: 'Description of Toledo' },
-//     { id: 4, name: 'Kaafu Atoll', country: 'United State', image: 'https://cdn.easyfrontend.com/pictures/search1_4.png', price: 325, description: 'Description of Kaafu Atoll' },
-//     { id: 5, name: 'Barcelona', country: 'Spain', image: 'https://cdn.easyfrontend.com/pictures/search1_5.png', price: 325, description: 'Description of Barcelona' },
-//     { id: 6, name: 'Hiroshima', country: 'Japan', image: 'https://cdn.easyfrontend.com/pictures/search1_6.png', price: 325, description: 'Description of Hiroshima' },
-//     { id: 7, name: 'Tibidabo', country: 'Barcelona', image: 'https://cdn.easyfrontend.com/pictures/search1_7.png', price: 325, description: 'Description of Tibidabo' },
-//     { id: 8, name: 'Brussels', country: 'Belgium', image: 'https://cdn.easyfrontend.com/pictures/search1_8.png', price: 325, description: 'Description of Brussels' },
-//   ]);
+const loadDestination = (id) => {
+  // 这里可以替换为从 API 获取数据的逻辑
+  // 假设我们有一个静态的数据列表
+  const staticData =[
+      {id:1, name: '三亚', image: [{ src: 'https://pic.52112.com/2020/04/13/JPG-200413_328/gCaPae4zjp_small.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:2, name: '上海', image: [{ src: 'https://img.shetu66.com/2023/04/25/1682405980883837.png', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:3, name: '广州', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:4, name: '厦门', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:5, name: '香港', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:6, name: '杭州', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:7, name: '伦敦', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      {id:8, name: '纽约', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }]},
+      ];
 
-//   destination.value = destinations.value.find(dest => dest.id === id);
-// };
+    const destination = staticData.find(dest => dest.id === id);
+    if (destination) {
+      images_collections.value = destination.image;
+    } else {
+      images_collections.value = [];
+    }
+};
+
 const currentIndex = ref(0); // 当前显示的第一张图片的索引
-const images = [
+const images = computed(() => images_collections.value || [
   { src: 'https://img1.qunarzz.com/travel/d5/1606/78/f159a24f7a0672f7.jpg?color=#2b79bf', title: 'Image 1' },
   { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },
   { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },
   { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },
   { src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' },
   // 可以继续添加更多图片
-];
+]);
+console.log("id: ",id);
+console.log("images_collections: ",images_collections.value);
+console.log("images: ",images);
 // 计算当前显示的三个图片
 const currentImages = computed(() => {
   return [
-    images[(currentIndex.value + 0) % images.length],
-    images[(currentIndex.value + 1) % images.length],
-    images[(currentIndex.value + 2) % images.length]
+    images.value[(currentIndex.value + 0) % images.value.length],
+    images.value[(currentIndex.value + 1) % images.value.length],
+    images.value[(currentIndex.value + 2) % images.value.length]
   ];
 });
 
 // 切换到上一张图片
 const prevImage = () => {
-  currentIndex.value = (currentIndex.value - 1 + images.length) % images.length;
+  currentIndex.value = (currentIndex.value - 1 + images.value.length) % images.value.length;
 };
 
 // 切换到下一张图片
 const nextImage = () => {
-  currentIndex.value = (currentIndex.value + 1) % images.length;
+  currentIndex.value = (currentIndex.value + 1) % images.value.length;
 };
 </script>
 

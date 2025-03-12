@@ -8,7 +8,7 @@ import axios from "axios";
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isRegisterMode: false,
-    loading: false,
+    // 因为使用 window.location.href = '/' 进行页面跳转时，浏览器会加载新的页面。 Pinia 存储的数据会重新初始化。
     token: Cookies.get('token') || '',
     user_id: Cookies.get('user_id') || '',
     user_name: Cookies.get('user_name') || '',
@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', {
     isPersonCenter : false,
   }),
   actions: {
+    //通过token与数据库中的db_hash_password进行校验,验证成功则返回true，失败则返回false
     async CheckLogin() {
       if (this.user_id) {
         try {
@@ -51,85 +52,33 @@ export const useAuthStore = defineStore('auth', {
 
     },
 
-    // //对称加密与解密函数
-    // // 加密单个文本
-    // encrypt(token, text) {
-    //   return CryptoJS.AES.encrypt(text, token).toString();
-    // },
-    //
-    // // 解密单个文本
-    // decrypt(token, encryptedText) {
-    //   const bytes = CryptoJS.AES.decrypt(encryptedText, token);
-    //   return bytes.toString(CryptoJS.enc.Utf8);
-    // },
-    // // 加密文本对象
-    // encrypt_text(token, id, name, email) {
-    //   // 创建一个对象，包含要加密的数据
-    //   const dataToEncrypt = {
-    //     id: this.encrypt(token, id),
-    //     name: this.encrypt(token, name),
-    //     email: this.encrypt(token, email),
-    //   };
-    //   return dataToEncrypt;
-    // },
-    //
-    // // 解密文本对象
-    // decrypt_text(token, encryptedData) {
-    //   // 解密对象中的每个字段
-    //   const decryptedData = {
-    //     id: this.decrypt(token, encryptedData.id),
-    //     name: this.decrypt(token, encryptedData.name),
-    //     email: this.decrypt(token, encryptedData.email),
-    //   };
-    //   return decryptedData;
-    // },
-
-
+      //获得登录状态
+    getLoginMode() {
+      return this.loading;
+    },
 
     toggleRegisterMode() {
       this.isRegisterMode = !this.isRegisterMode;
     },
-    setRegisterMode(mode) {
-      this.isRegisterMode = mode;
-    },
-    TurnPersonCenterMode() {
-      this.isPersonCenter = !this.isPersonCenter;
-    },
-    getPersonCenterMode() {
-      return this.isPersonCenter;
-    },
+
     clearCookies() {
       Cookies.remove('token');
       Cookies.remove('user_id');
       Cookies.remove('user_name');
       Cookies.remove('user_email');
+      Cookies.remove('loading');
       this.clearToken();
       this.clearUserId();
     },
 
-    // 设置token
-    setToken(token) {
-      this.token = token;
-    },
     clearToken() {
       this.token = null;
     },
     getToken() {
       return this.token;
     },
-    getUserId() {
-      return this.user_id;
-    },
     clearUserId() {
       this.user_id = null;
-    },
-
-
-    toggleLoginMode() {
-      this.loading = !this.loading;
-    },
-    setLoginMode(mode) {
-      this.loading = mode;
     },
   },
 });

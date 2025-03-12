@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/order/book/', order_views.create_order),
     path('api/user/update/', user_views.update_user_info),
     path("api/user/forget/", user_views.forget_password),
+    # path("api/order/notice/<int:user_id>/", order_views.notice_ticket),
 ]

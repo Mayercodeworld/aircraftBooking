@@ -2,11 +2,13 @@
 import { ref, onMounted } from 'vue';
 import { formData} from '@/stores/formdata';
 import axios from 'axios';
-
+import {useAuthStore} from '../stores/user_store.js'
+const authStore = useAuthStore();
 const depart = ref();
 const flightsData = ref([]);
 const loading = ref(true);
 const showSearch = ref(false);
+const isLoggedIn = ref(false);
 // 辅助函数：解析日期字符串并提取日期和时间部分
 function parseDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
@@ -56,9 +58,10 @@ async function searchFlights() {
     }
 }
 
-onMounted(() => {
-    searchFlights();
-})
+onMounted(async () => { // 声明为 async 函数
+    await searchFlights(); // 使用 await 调用异步函数
+    isLoggedIn.value = await authStore.CheckLogin(); // 使用 await 获取 CheckLogin 的结果
+});
 
 // function toggleModal(btnId, modalId) {
 //             const button = document.getElementById(btnId);
@@ -80,6 +83,15 @@ onMounted(() => {
 //         toggleModal(btnId, modalId);
 //     });
 // });
+
+
+function handleBooking(id) {
+  if (isLoggedIn.value) {
+    window.location.href = `/ticket/verify/${id}`;
+  }else{
+    window.location.href = '/login';
+  }
+}
 </script>
 <template>
     <section
@@ -320,7 +332,7 @@ onMounted(() => {
                     <div>
                         <!-- item -->
                         <div v-for="(flight, index) in flightsData" :key="index" class="grid grid-cols-12 mt-4">
-                            
+
                             <div class="col-span-12 lg:col-span-10 lg:pr-0">
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
@@ -350,7 +362,7 @@ onMounted(() => {
                                         <p class="mb-0 opacity-50">历时{{ flight.duration.hours }}时{{ flight.duration.minutes }}分</p>
                                         <hr
                                             class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        
+
                                     </div>
 
                                     <!-- time -->
@@ -365,9 +377,11 @@ onMounted(() => {
                                 <div
                                     class="rightbox bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md ezy__travel4-price p-2 lg:p-4 text-center h-full flex flex-col items-center justify-center ml-0">
                                     <h2 class="text-[32px] font-bold mb-1">￥{{ flight.price }}</h2>
-                                    <router-link :to="`/ticket/verify/${flight.id}`"
-                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订
-                                    </router-link>
+<!--                                    <router-link :to="`/ticket/verify/${flight.id}`"-->
+<!--                                        class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0">预订-->
+<!--                                    </router-link>-->
+                                  <button class="h-[46px] py-[8px] px-[25px] text-white bg-blue-600 border border-blue-600 hover:opacity-90 rounded-sm font-bold mt-8 sm:mt-0" @click="handleBooking(flight.id)" >预订
+                                  </button>
                                     <span class="remainbox">剩{{ flight.remaining_seats }}张</span>
                                 </div>
                             </div>
