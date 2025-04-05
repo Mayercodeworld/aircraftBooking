@@ -6,6 +6,7 @@ from .models import Flight
 from .forms import FlightForm
 from .serializers import FlightSerializer
 from .serializers import SeatSerializer
+from datetime import datetime
 # Create your views here.
 
 @api_view(['POST'])
@@ -40,8 +41,16 @@ def get_flights(request):
         if 'to' in query_params:
             flights = flights.filter(arrival_city=query_params['to'])
         # 可以根据需要添加更多过滤条件
-        # if 'depart' in query_params:
-        #     flights = flights.filter(departure_time=query_params['depart'])
+        if 'depart' in query_params:
+            try:
+                depart_date = datetime.strptime(query_params['depart'], '%Y-%m-%d')
+                flights = flights.filter(
+                    departure_time__year=depart_date.year,
+                    departure_time__month=depart_date.month,
+                    departure_time__day=depart_date.day
+                )
+            except ValueError:
+                return Response({"error": "Invalid date format"}, status=status.HTTP_400_BAD_REQUEST)
         
     serializer = FlightSerializer(flights, many=True)
     return Response(serializer.data)

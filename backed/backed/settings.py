@@ -62,6 +62,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:5173",
+    "http://localhost:5175",
+    # "https://776b77fa.r10.cpolar.top",
 ]
 
 ROOT_URLCONF = 'backed.urls'

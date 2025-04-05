@@ -30,6 +30,7 @@ const formData = ref({
 });
 const seats = ref([]);
 const seatLetter = ref(null); // 新增座位字母字段
+const alreadyPaid = ref(false);
 
 function checked(event) {
     // 移除之前选中的保险的高亮类
@@ -86,9 +87,11 @@ async function pay() {
         formData.value.price = totalPrice;
         formData.value.seat_letter = seatLetter.value; // 添加座位字母到 formData
         // formData.value.flight = flight.value.id; // 确保传递的是 flight_id
-        console.log('formData:', formData.value)
-
-        const response = await axios.post('http://localhost:8000/api/order/book/', formData.value);
+        // console.log('formData:', formData.value)
+        // 发送购票请求之前，检查一下是否已经购买本票
+        await axios.post(`http://localhost:8000/api/order/check/`, formData.value);
+        // 没有购买直接创建订单
+        await axios.post('http://localhost:8000/api/order/book/', formData.value);
         isPaid.value = true;
 
         // 启动倒计时
@@ -96,12 +99,13 @@ async function pay() {
             countdown.value--;
             if (countdown.value <= 0) {
                 clearInterval(interval);
-                router.push('/tickets');
+                router.push('/ticket');
             }
         }, 1000);
     } catch (error) {
         console.error('Error creating order:', error);
         showModal2.value = true;
+        alreadyPaid.value = true;
     }
 }
 
@@ -515,7 +519,7 @@ onMounted(() => {
                         </h1>
                         <p class="text-base opacity-80 px-12">{{ countdown }}秒后自动返回上一个页面</p>
                         <p class="text-base opacity-80 px-12">
-                            您已支付成功，前往<router-link to="/user/tickets" style="color: blue;">我的行程</router-link>中确认订单？
+                            您已支付成功，前往<router-link to="/mystickets" style="color: blue;">我的行程</router-link>中确认订单？
                         </p>
                         
                     </div>
@@ -553,7 +557,7 @@ onMounted(() => {
                 <div class="px-4 py-2 -mx-3">
                     <div class="mx-3">
                         <span class="font-semibold text-yellow-400 dark:text-yellow-300">警告</span>
-                        <p v-if="isPaid" class="text-sm text-gray-600 dark:text-gray-200" >
+                        <p v-if="alreadyPaid" class="text-sm text-gray-600 dark:text-gray-200" >
                             您已购买该机票，请勿重复购买。
                         </p>
                         <p v-if="isNull">

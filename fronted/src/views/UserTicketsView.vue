@@ -60,7 +60,7 @@ const formatDate = (dateString) => {
           <table class="table-fixed text-center w-full">
             <thead class="mb-6">
             <tr class="text-lg sm:text-[22px] font-bold py-5">
-              <th >订单号</th>
+              <th>航班号</th>
               <th>出发日期</th>
               <th>价格</th>
               <th>状态</th>
@@ -69,13 +69,13 @@ const formatDate = (dateString) => {
               <th>目的地</th>
               <th>座位号</th>
               <th>乘客</th>
-              <th></th>
+              <!-- <th>删除</th> -->
             </tr>
             </thead>
             <tbody class="sm:text-lg font-medium align-baseline">
             <tr v-for="order in orders" :key="order.order_id">
-              <td class="text-start py-5">{{ order.order_id }}</td>
-              <td class="py-5 px-0">{{ formatDate(order.flight.departure_time) }}</td>
+              <td class="py-5">{{ order.flight.flight_no }}</td>
+              <td class="py-5">{{ formatDate(order.flight.departure_time) }}</td>
               <td class="py-5">￥{{ order.price }}</td>
               <td class="flex justify-center py-5">
                   <span
@@ -83,7 +83,8 @@ const formatDate = (dateString) => {
                     :class="{
                       'bg-blue-600': order.status === '已结束',
                       'bg-red-600': order.status === '已取消',
-                      'bg-green-600': order.status === '等待出行'
+                      'bg-green-600': order.status === '等待出行',
+                      'bg-green-700': order.status === '进行中'
                     }">
                     {{ order.status }}
                   </span>
@@ -108,6 +109,13 @@ const formatDate = (dateString) => {
               <td>
                 {{ order.name}}
               </td>
+              <!-- <td>
+                <span 
+                  class="bg-red-600 text-white hover:bg-opacity-90 rounded-md px-5 py-2 cursor-pointer"
+                  @click="cancel_order(order.order_id)">
+                  删除
+                </span>
+              </td> -->
             </tr>
             </tbody>
           </table>

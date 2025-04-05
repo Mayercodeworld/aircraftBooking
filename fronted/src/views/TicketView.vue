@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { formData} from '@/stores/formdata';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { formData } from '@/stores/formdata';
 import axios from 'axios';
+import Search from '@/components/Search.vue';
 import {useAuthStore} from '../stores/user_store.js'
 
 const authStore = useAuthStore();
@@ -10,6 +11,98 @@ const flightsData = ref([]);
 const loading = ref(true);
 const showSearch = ref(false);
 const isLoggedIn = ref(false);
+const priceNumber = ref(0);
+const FlyTime = ref(0);
+const flights_company = ref("");
+const Price_flightsData = ref([]);
+const new_flightsData = ref([]);
+const showNoFlightsModal = ref(false);
+const selectedPrice = ref(2000);
+const selectedTime = ref(null);
+const selectedCompany = ref(null);
+
+// // 从 localStorage 加载 formData
+if (localStorage.getItem('formData')) {
+    Object.assign(formData, JSON.parse(localStorage.getItem('formData')));
+    console.log("formData: ",formData);
+}
+
+function select_price_flightData(price) {
+    // 确保 price 是数字类型
+    priceNumber.value = parseFloat(price);
+    selectedPrice.value = price;
+    // 使用 filter 方法查找低于指定价格的航班
+    Price_flightsData.value = flightsData.value.filter(flight => parseFloat(flight.price) < priceNumber.value);
+}
+
+function select_time_flightData(time) {
+    FlyTime.value = parseFloat(time);
+    console.log("FlyTime: ",FlyTime.value);
+    // 使用 filter 方法查找起飞时间早于指定时间的航班
+    selectedTime.value = time; 
+    Price_flightsData.value = flightsData.value.filter(flight => parseFloat(flight.departureParsed.hour) < FlyTime.value);
+    console.log("Price_flightsData: ",Price_flightsData.value);
+}
+
+function select_company_flightData(company) {
+    flights_company.value = company;
+    console.log("flights_company: ",flights_company.value);
+    // 使用 filter 方法查找特定公司航班
+    Price_flightsData.value = flightsData.value.filter(flight => flight.airline === flights_company.value);
+    console.log("Price_flightsData: ",Price_flightsData.value);
+}
+
+function clear_data()
+{
+    priceNumber.value = 0;
+    FlyTime.value = 0;
+    flights_company.value = "";
+    selectedPrice.value = null;
+    selectedTime.value = null;
+    selectedCompany.value = null; 
+}
+
+// 移除 new_flightsData.value = filtered; 从 computed 中
+const filteredFlights = computed(() => {
+
+    if(priceNumber.value === 0 && FlyTime.value === 0 && flights_company.value === ""){
+        return flightsData.value;
+    }
+
+    let filtered = flightsData.value;
+
+    if (priceNumber.value !== 0) {
+        filtered = filtered.filter(flight => parseFloat(flight.price) < priceNumber.value);
+    }
+    if (FlyTime.value !== 0) {
+        filtered = filtered.filter(flight => parseFloat(flight.departureParsed.hour) < FlyTime.value);
+    }
+    if (flights_company.value !== "") {
+        filtered = filtered.filter(flight => flight.airline === flights_company.value);
+    }
+    checkAndShowNoFlightsModal(filtered); // 调用方法更新模态框状态
+    return filtered.length > 0 ? filtered : []; // 返回计算结果
+});
+
+// 定义一个方法来控制 showNoFlightsModal
+function checkAndShowNoFlightsModal(filtered) {
+    if (filtered.length > 0) {
+        showNoFlightsModal.value = false; // 如果有结果，隐藏模态框
+    } else {
+        showNoFlightsModal.value = true; // 如果没有结果，显示模态框
+    }
+}
+
+// 使用 watch 监听 filteredFlights 的变化并更新 new_flightsData
+watch(filteredFlights, (newFilteredFlights) => {
+    new_flightsData.value = newFilteredFlights; // 在这里更新 new_flightsData
+}, { immediate: true }); // 立即执行一次以初始化 new_flightsData
+
+
+const flightsData_length = computed(() => {
+    return new_flightsData.value.length !== 0 ?  new_flightsData.value.length :  flightsData.value.length;
+});
+
 // 辅助函数：解析日期字符串并提取日期和时间部分
 function parseDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
@@ -39,6 +132,12 @@ function calDuration(departureTime, arrivalTime) {
 function toggleSearch() {
     showSearch.value = !showSearch.value;
 }
+
+function closeModal() {
+    showNoFlightsModal.value = false;
+    clear_data();
+}
+
 // 搜索航班信息
 async function searchFlights() {
     try {
@@ -51,7 +150,11 @@ async function searchFlights() {
                 arrivalParsed: parseDateTime(flight.arrival_time),
                 duration: calDuration(flight.departure_time, flight.arrival_time),
             }
-        })
+        });
+      // 保存 formData 到 localStorage
+    localStorage.setItem('formData', JSON.stringify(formData));
+    console.log("flight: ",flightsData.value[0]);
+
     } catch (error) {
         console.error('Error fetching flights:', error);
     } finally {
@@ -65,7 +168,16 @@ onMounted(async () => { // 声明为 async 函数
     top: 0,
     });
     await searchFlights(); // 使用 await 调用异步函数
+    console.log("被调用");
+    // clear_data();
     isLoggedIn.value = await authStore.CheckLogin(); // 使用 await 获取 CheckLogin 的结果
+});
+
+onUnmounted(() => {
+    // 清除 localStorage 中的 formData 内容
+    localStorage.removeItem('formData');
+    console.log()
+    console.log("localStorage cleared")
 });
 
 // function toggleModal(btnId, modalId) {
@@ -88,6 +200,12 @@ onMounted(async () => { // 声明为 async 函数
 //         toggleModal(btnId, modalId);
 //     });
 // });
+
+// function submitFilters() {
+//     // 这里可以添加提交筛选条件的逻辑，例如重新过滤航班数据
+//     console.log("筛选条件已提交");
+// }
+
 
 function handleBooking(id) {
     if (isLoggedIn.value) {
@@ -113,7 +231,7 @@ function handleBooking(id) {
                             </div>
                             <div>
                                 <h3 class="text-[28px] font-medium mb-1 sm:mb-2 leading-none">{{ depart }}</h3>
-                                <p class="mb-0 opacity-75 font-normal">JUN 04,SAT | 2TRAVELLERS</p>
+                                <p class="mb-0 opacity-75 font-normal">{{ formData.depart }} | 直达</p>
                             </div>
                         </div>
                         <div class="col-span-12 sm:col-span-4 flex items-center justify-center sm:justify-end">
@@ -124,66 +242,7 @@ function handleBooking(id) {
                     </div>
                 </div>
             </div>
-            <!-- 弹出搜索框 -->
-            <div v-if="showSearch" class="searchbox grid grid-cols-12 gap-4 mt-20 md:mt-40 bg-white text-black px-4 rounded-md">
-                <div class="col-span-12">
-                    <div class="p-[24px]">
-                        <form class="grid grid-cols-2 gap-4 md:grid-cols-7" @submit.prevent="searchFlights">
-                            <!-- from -->
-                            <div class="col-span-1 flex justify-center items-center">
-                                <input v-model="formData.from" type="text"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
-                                    placeholder="出发地" />
-                                <i class="text-black fas fa-sync ml-2"></i>
-                            </div>
-                            <!-- to -->
-                            <div class="col-span-1">
-                                <input v-model="formData.to" type="text"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
-                                    placeholder="目的地" />
-                            </div>
-                            <!-- depart -->
-                            <div class="col-span-1">
-                                <input v-model="formData.depart" type="date"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500"
-                                    placeholder="depart" />
-                            </div>
-                            <!--  way -->
-                            <div class="col-span-1">
-                                <select v-model="formData.inputWay"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
-                                    <option selected>直达</option>
-                                    <option>转机</option>
-                                </select>
-                            </div>
-                            <!-- passengers -->
-                            <div class="col-span-1">
-                                <select v-model="formData.passengers"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
-                                    <option selected>1人</option>
-                                    <option>2人</option>
-                                    <option>3人</option>
-                                </select>
-                            </div>
-
-                            <!-- type -->
-                            <div class="col-span-1">
-                                <select v-model="formData.type"
-                                    class="h-[48px] w-full leading-[36px] border border-[#eaeaea] bg-transparent text-[#3b3b3b] rounded-md  placeholder:text-black py-[6px] px-[12px] focus:border-none focus:outline-blue-500">
-                                    <option selected>经济</option>
-                                    <option>商务</option>
-                                </select>
-                            </div>
-                            <!-- button -->
-                            <div class="col-span-2 md:col-span-1">
-                               <button v-on:click="searchFlights" type="button"
-                                    class="search-btn text-white min-h-[48px] w-full text-[15px] py-[5px] px-[30px] bg-blue-600 hover:opacity-90 rounded-md">查询
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <Search v-if="showSearch" :search-flights="searchFlights"></Search>
             <!-- body portion -->
             <div class="grid grid-cols-12 gap-4 mt-10 ">
                 <!-- filter -->
@@ -193,7 +252,7 @@ function handleBooking(id) {
                             <h3 class="text-[28px] leading-[1px] font-medium mb-0">筛选</h3>
                         </div>
 
-                        <form action="">
+                        <form>
                             <!-- price range -->
                             <div>
                                 <a id="travel4BTN"
@@ -205,16 +264,22 @@ function handleBooking(id) {
                                 </a>
                                 <div id="travel4Modal2">
                                     <div class="px-3 lg:px-4 lg:pb-4 mt-4">
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none"
+                                            :class="{ 'bg-blue-600 text-white': selectedPrice === 500 }"
+                                            @click="select_price_flightData(500); submitFilters()">
                                             <i class="fas fa-cloud-sun mr-6"></i>500以下
                                         </button>
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedPrice === 800 }"
+                                            @click="select_price_flightData(800); submitFilters()">
                                             <i class="fas fa-cloud-moon mr-6"></i>800以下
                                         </button>
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedPrice === 2000 }"
+                                            @click="select_price_flightData(2000); submitFilters()">
                                             <i class="fas fa-cloud mr-6"></i>2000以下
                                         </button>
                                     </div>
@@ -232,20 +297,28 @@ function handleBooking(id) {
                                 </a>
                                 <div id="travel4Modal2">
                                     <div class="px-3 lg:px-4 lg:pb-4 mt-4">
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none"
+                                            :class="{ 'bg-blue-600 text-white': selectedTime === 6 }"
+                                            @click="select_time_flightData(6); submitFilters()">
                                             <i class="fas fa-cloud-sun mr-6"></i>6点之前
                                         </button>
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedTime === 12 }"
+                                            @click="select_time_flightData(12); submitFilters()">
                                             <i class="fas fa-cloud-moon mr-6"></i>12点之前
                                         </button>
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedTime === 18 }"
+                                            @click="select_time_flightData(18); submitFilters()">
                                             <i class="fas fa-cloud mr-6"></i>18点之前
                                         </button>
-                                        <button
-                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2">
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedTime === 24 }"
+                                            @click="select_time_flightData(24); submitFilters()">
                                             <i class="fas fa-sun mr-6"></i>24点之前
                                         </button>
                                     </div>
@@ -263,53 +336,38 @@ function handleBooking(id) {
                                 </a>
                                 <div id="travel4Modal4">
                                     <div class="px-3 lg:px-4 lg:pb-4 mt-2">
-                                        <div>
-                                            <div>
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" />
-                                                <label class="opacity-80"> 南方航空
-                                                </label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" checked />
-                                                <label class="opacity-80"> 海南航空
-                                                </label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" />
-                                                <label class="opacity-80"> Aeroflot
-                                                </label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" />
-                                                <label class="opacity-80"> Aeroflot
-                                                </label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" />
-                                                <label class="opacity-80"> Aeroflot
-                                                </label>
-                                            </div>
-                                            <div class="mt-3">
-                                                <input class="w-[16px] h-[16px] cursor-pointer mr-6 rounded-sm"
-                                                    type="checkbox" value="" />
-                                                <label class="opacity-80"> Aeroflot
-                                                </label>
-                                            </div>
-                                        </div>
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none"
+                                            :class="{ 'bg-blue-600 text-white': selectedCompany === '南方航空' }"
+                                            @click="select_company_flightData('南方航空'); submitFilters()">
+                                            南方航空
+                                        </button>
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedCompany === '海南航空' }"
+                                            @click="select_company_flightData('海南航空'); submitFilters()">
+                                            海南航空
+                                        </button>
+                                        <button type="button"
+                                            class="w-full text-[#28303b] dark:text-white hover:text-white text-[18px] font-medium bg-[#EDF2F6] dark:bg-[#4C4D61] hover:bg-[#404156] dark:hover:bg-[#282836]  py-[5px] px-[20px] border-none mt-2"
+                                            :class="{ 'bg-blue-600 text-white': selectedCompany === '东方航空' }"
+                                            @click="select_company_flightData('东方航空'); submitFilters()">
+                                            东方航空
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="px-4 mt-4">
+<!--                                <button-->
+<!--                                    class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded w-full"-->
+<!--                                    @click="submitFilters">提交选项</button>-->
                                 <button
-                                    class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded w-full">重置所有选项</button>
+                                    class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded w-full mt-2"
+                                    @click="clear_data">重置所有选项</button>
                             </div>
                         </form>
+
                     </div>
                 </div>
 
@@ -318,14 +376,23 @@ function handleBooking(id) {
                     <!-- filters -->
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
-                            <h4 class="mb-0 font-medium text-[24px] text-[#28303B] dark:text-white">{{ flightsData.length }} 条结果</h4>
+                            <h4 class="mb-0 font-medium text-[24px] text-[#28303B] dark:text-white">{{ flightsData_length }} 条结果</h4>
                         </div>
                     </div>
 
                     <div>
-                        <!-- item -->
-                        <div v-for="(flight, index) in flightsData" :key="index" class="grid grid-cols-12 mt-4">
-                            
+                      <!-- 弹窗 -->
+                        <div v-if="showNoFlightsModal" class="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-10">
+                            <div class="bg-white p-8 rounded-lg shadow-lg">
+                                <p class="text-lg font-medium mb-4">抱歉,没有找到符合条件的机票</p>
+                                <button class="text-white h-[46px] font-medium py-[8px] px-[25px] bg-blue-600 hover:opacity-90 rounded" @click="closeModal">关闭</button>
+                            </div>
+                        </div>
+
+                      <!-- 航班列表 -->
+                      <div v-else>
+                        <div v-for="(flight, index) in filteredFlights" :key="index" class="grid grid-cols-12 mt-4">
+
                             <div class="col-span-12 lg:col-span-10 lg:pr-0">
                                 <div
                                     class="bg-[#F6F6F6] dark:bg-transparent border border-[#E1E6EA] dark:border-[#555669] rounded-md grid grid-cols-12 gap-4 items-center h-full p-2">
@@ -355,7 +422,7 @@ function handleBooking(id) {
                                         <p class="mb-0 opacity-50">历时{{ flight.duration.hours }}时{{ flight.duration.minutes }}分</p>
                                         <hr
                                             class="relative h-[2px] bg-slate-400 overflow-visible opacity-100 dark:opacity-50 before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:left-0 before:bg-slate-400 dark:before:bg-gray-300 before:w-2 before:h-2 before:rounded-full after:content-[''] after:absolute after:top-1/2 after:-translate-y-1/2 after:right-0 after:bg-slate-400 dark:after:bg-gray-300 after:w-2 after:h-2 after:rounded-full my-2" />
-                                        
+
                                     </div>
 
                                     <!-- time -->
@@ -377,6 +444,7 @@ function handleBooking(id) {
                                 </div>
                             </div>
                         </div>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -387,9 +455,11 @@ function handleBooking(id) {
 .searchbox {
     margin-top: 20px;
 }
+
 .rightbox {
     position: relative;
 }
+
 .rightbox .remainbox {
     position: absolute;
     color: #fff;

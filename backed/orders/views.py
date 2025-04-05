@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,10 +7,27 @@ from .serializers import OrderSerializer, OrderCreateSerializer
 from .models import Order
 from flights.models import Flight, Seat  
 
+
 @api_view(['GET'])
 def get_user_tickets(request, user_id):
     # 根据 user_id 查找所有匹配的 Order 行
     orders = Order.objects.filter(user_id=user_id)
+    # 获取当前时间
+    now = timezone.now()
+    print(now)
+    # 遍历每个订单，更新状态
+    for order in orders:
+        flight = order.flight
+        departure_time = flight.departure_time
+        arrival_time = flight.arrival_time
+        # print(departure_time)
+        # print(arrival_time)
+        if now > departure_time and now < arrival_time and order.status == '等待出行':
+            order.status = '进行中'
+        elif now > arrival_time and order.status == '进行中' or order.status == '等待出行':
+            order.status = '已结束'
+        # print(order.status)
+        order.save()
 
     # 使用 OrderSerializer 序列化订单数据
     serializer = OrderSerializer(orders, many=True)
@@ -21,7 +39,26 @@ def get_user_tickets(request, user_id):
     # 返回结果
     return Response(serializer.data)
 
-
+@api_view(['POST'])
+def is_order_exist(request):
+    request.data['user'] = int(request.data.get('user'))
+    request.data['flight'] = int(request.data.get('flight'))
+    if existing(request):
+        return Response({'code': 401, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'code': 0, 'msg': '该用户没有相同的订单'}, status=status.HTTP_200_OK)
+    
+def existing(request):
+    existing_order = Order.objects.filter(
+        user=request.data.get('user'), 
+        flight=request.data.get('flight'), 
+        passportNo=request.data.get('passportNo'), 
+        name=request.data.get('name'), 
+        status='等待出行'
+    ).first()
+    if existing_order:
+        return True
+    return False
+    
 @api_view(['POST'])
 def create_order(request):
     print('request data:', request.data)
@@ -32,10 +69,12 @@ def create_order(request):
     request.data['flight'] = flight
     seat_letter = request.data.get('seat_letter')  # 获取用户选择的座位字母
 
-    # 需要改进筛选方法 
-    existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), stauts='等待出行').first()
-    if existing_order:
-        return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
+    # # 需要改进筛选方法 
+    # if existing(request):
+    #     return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
+    # existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), status='等待出行').first()
+    # if existing_order:
+    #     return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
     
     flight = Flight.objects.filter(id=flight).first()
     if not flight:

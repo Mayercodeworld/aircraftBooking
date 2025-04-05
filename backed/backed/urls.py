@@ -19,6 +19,7 @@ from django.urls import path
 from flights import views as flights_views
 from user import views as user_views
 from orders import views as order_views
+from ai import views as ai_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('back/update/', flights_views.update_flights, name='update_flight'),
@@ -31,6 +32,12 @@ urlpatterns = [
     path('api/user/<int:user_id>/tickets/', order_views.get_user_tickets),
     path('api/order/book/', order_views.create_order),
     path('api/order/<str:order_id>/cancel/', order_views.cancel_order),
+    path('api/order/check/', order_views.is_order_exist),
     path('api/user/update/', user_views.update_user_info),
     path("api/user/forget/", user_views.forget_password),
+    # path("api/sparkai/", ai_views.get_answer_spark)
+    # path("api/sparkai/", ai_views.get_answer_qwq)
+    path("api/sparkai/", ai_views.get_answer_siliconflow)
+
+
 ]

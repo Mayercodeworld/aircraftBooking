@@ -20,8 +20,8 @@ const router = createRouter({
       component: () => import('../components/Login.vue'),
     },
     {
-      path: '/tickets',
-      name: 'Tickets',
+      path: '/ticket',
+      name: 'Ticket',
       component: () => import('../views/TicketView.vue'),
     },
     {

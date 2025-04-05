@@ -29,7 +29,7 @@ header {
   position: fixed;
   height: 8vh;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0);
   z-index: 100;
 }
 </style>
