@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
     "buefy": "npm:@ntohq/buefy-next@^0.2.0",
+    "echarts": "^5.6.0",
     "js-cookie": "^3.0.5",
     "marked": "^15.0.7",
     "pinia": "^3.0.1",

@@ -4,18 +4,21 @@ import Search from '@/components/Search.vue';
 import Cookies from "js-cookie";
 import axios from "axios";
 import {useAuthStore} from '../stores/user_store.js'
+// import sanya from '../assets/photos/首页/三亚.jpg'
+
+
 const authStore = useAuthStore()
 const isLoggedIn = ref(false);
 const fly = ref(false)
 const destinations = ref([
-  { id: 1, name: '三亚', country: '中国', image: 'https://dimg04.c-ctrip.com/images/100t0u000000j7i4o06A5_R_10000_1200.jpg'},
-  { id: 2, name: '上海', country: '中国', image: 'https://cdn.pixabay.com/photo/2015/04/20/10/20/shanghai-730892_1280.jpg'},
-  { id: 3, name: '广州', country: '中国', image: 'https://cdn.pixabay.com/photo/2017/06/30/08/49/city-2457602_1280.jpg'},
-  { id: 4, name: '厦门', country: '中国', image: 'https://youimg1.c-ctrip.com/target/010251200087d87rsC522_D_1600_10000.jpg?proc=autoorient' },
-  { id: 5, name: '香港', country: '中国', image: 'https://cdn.pixabay.com/photo/2018/09/30/13/18/hong-kong-3713491_1280.jpg'},
-  { id: 6, name: '杭州', country: '中国', image: 'https://img.shetu66.com/2023/07/18/1689647215360950.png?x-oss-process=image/resize,h_800/watermark,image_d2F0ZXJtYXJrL2JhY2tncm91cDAxLnBuZw==,g_se,x_0,y_10/watermark,text_6K6-5Zu-572RIOe8luWPtzo1Njg3NDQzMzExNTQ5NTMxMzE=,type_ZmFuZ3poZW5naGVpdGk,color_FFFFFF,size_12,g_se,x_15,y_16'},
-  { id: 7, name: '伦敦', country: '英国', image: 'https://cdn.pixabay.com/photo/2016/11/15/08/20/big-ben-1825569_1280.jpg'},
-  { id: 8, name: '纽约', country: '美国', image: 'https://cdn.easyfrontend.com/pictures/search1_8.png'},
+  { id: 1, name: '三亚', country: '中国', image: '/src/assets/photos/firstpage/sanya.jpg'},
+  { id: 2, name: '上海', country: '中国', image: '/src/assets/photos/firstpage/shanghai.jpg'},
+  { id: 3, name: '广州', country: '中国', image: '/src/assets/photos/firstpage/guangzhou.jpg'},
+  { id: 4, name: '厦门', country: '中国', image: '/src/assets/photos/firstpage/xiamen.jpg' },
+  { id: 5, name: '香港', country: '中国', image: '/src/assets/photos/firstpage/hongkong.jpg'},
+  { id: 6, name: '杭州', country: '中国', image: '/src/assets/photos/firstpage/hangzhou.png'},
+  { id: 7, name: '伦敦', country: '英国', image: '/src/assets/photos/firstpage/london.jpg'},
+  { id: 8, name: '纽约', country: '美国', image: '/src/assets/photos/firstpage/newyork.jpg'},
 ]);
 
 //取票提醒
@@ -97,7 +100,7 @@ const get_user_tickets = () => {
 <template>
     <section
       class="ezy__travel1 light py-20 md:p-[100px]  text-white relative z-11 bg-cover bg-no-repeat bg-center flex justify-center items-end">
-      <video autoplay loop muted playsinline>
+      <video autoplay muted playsinline>
           <source src="../assets/videos/video1.mp4" type="video/mp4">
           您的浏览器不支持 video 标签。
       </video>  
@@ -124,7 +127,7 @@ const get_user_tickets = () => {
     </section>
     
     <section
-        class="ezy__travel3 light py-14 md:py-24 bg-white dark:bg-[#2E2F41] text-zinc-900 dark:text-white relative overflow-hidden z-10">
+        class="ezy__travel3 light py-14 md:py-24 bg-white dark:bg-[#2E2F41] text-zinc-900 dark:text-white relative overflow-hidden z-1">
         <div class="container px-4 mx-auto">
             <div class="grid grid-cols-12 justify-center mb-4 md:mb-5">
                 <div class="col-span-12 lg:col-span-6 lg:col-start-4 text-center">
@@ -186,7 +189,6 @@ const get_user_tickets = () => {
     background-size: cover;
     background-position: center;
     position: relative;
-    overflow: hidden;
 }
 
 .ezy__travel1 video {
@@ -202,7 +204,7 @@ const get_user_tickets = () => {
 /* 确保图片容器具有 overflow: hidden 样式 */
 .box {
   /* background-color: #404156; */
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 /* 使用 object-fit: cover 来控制图片的显示方式 */
@@ -223,6 +225,6 @@ const get_user_tickets = () => {
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    z-index: 100;
+    z-index: 1000;
 }
 </style>

@@ -129,6 +129,7 @@ function calDuration(departureTime, arrivalTime) {
         minutes: minutes.toString().padStart(2, '0') // 确保分钟是两位数
     };
 }
+
 function toggleSearch() {
     showSearch.value = !showSearch.value;
 }

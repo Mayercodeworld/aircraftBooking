@@ -72,9 +72,9 @@ def create_order(request):
     # # 需要改进筛选方法 
     # if existing(request):
     #     return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
-    # existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), status='等待出行').first()
-    # if existing_order:
-    #     return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
+    existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), status='等待出行').first()
+    if existing_order:
+        return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
     
     flight = Flight.objects.filter(id=flight).first()
     if not flight:

@@ -15,22 +15,73 @@ const flight = ref([]);
 const flightId = ref(route.params.id);
 const loading = ref(true);
 const isPaid = ref(false);
-const isNull = ref(false);
+const errorLog = ref('');
+// const isNull = ref(false);
 const countdown = ref(5);
 const authStore = useAuthStore();
+
 const formData = ref({
     user: authStore.user_id,
     flight: flightId.value,
     name: '',
     age: '',
     gender: '',
-    country: '',
+    country: '中国',
     passportNo: '',
     price: 0,
+    errorName: '',
+    errorAge: '',
+    errorPassport: ''
 });
-const seats = ref([]);
+
 const seatLetter = ref(null); // 新增座位字母字段
-const alreadyPaid = ref(false);
+
+function validateName(value) {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+        return '姓名不能为空';
+    }
+
+    // 中文姓名正则：仅允许中文字符（Unicode 范围）
+    const chineseRegex = /^[\u4e00-\u9fa5 ]+$/;
+    // 英文姓名正则：允许大小写字母和空格
+    const englishRegex = /^[a-zA-Z ]+$/;
+
+    if (!chineseRegex.test(trimmedValue) && !englishRegex.test(trimmedValue)) {
+        return '请输入合法的中文或英文姓名';
+    }
+    if (trimmedValue.length < 2 || trimmedValue.length > 30) {
+        return '姓名长度应在2到30个字符之间';
+    }
+    return '';
+}
+
+function validateAge(value) {
+    const age = parseInt(value, 10);
+    if (isNaN(age)) {
+        return '年龄必须为数字';
+    }
+    if (age <= 10 || age > 80) {
+        return '年龄范围应在10-80之间';
+    }
+    return '';
+}
+
+function validatePassport(value) {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+        return '身份证/护照号码不能为空';
+    }
+
+    // 身份证正则表达式（支持15位和18位）
+    const idCardRegex = /^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/;
+
+    if (!idCardRegex.test(trimmedValue)) {
+        return '请输入合法的身份证号码（15位或18位）';
+    }
+    return '';
+}
 
 function checked(event) {
     // 移除之前选中的保险的高亮类
@@ -64,18 +115,33 @@ function selectSeatLetter(letter) {
     seatLetter.value = letter;
 }
 
-function submit() {
-    if (formData.value.name === '' || formData.value.age === '' || formData.value.gender === '' || formData.value.country === '' || formData.value.passportNo === '') {
+async function submit() {
+    
+    // 验证所有字段
+    formData.value.errorName = validateName(formData.value.name);
+    formData.value.errorAge = validateAge(formData.value.age);
+    formData.value.errorPassport = validatePassport(formData.value.passportNo);
+
+    // 检查是否有错误信息
+    if (formData.value.errorName || formData.value.errorAge || formData.value.errorPassport) {
         showModal2.value = true;
-        isNull.value = true;
-    } else {
-        isNull.value = false;
-        showModal1.value = true;
+        errorLog.value = '请确保所有输入信息格式正确'
+        return;
     }
-    console.log(formData.value);
+
+    try{
+        await axios.post('http://localhost:8000/api/order/check/', formData.value);
+    } catch (error) {
+        errorLog.value = '订单已存在，请勿重复购买'
+        showModal2.value = true;
+        return;
+    }
+    // 如果没有错误，继续执行提交操作
+    showModal1.value = true;
 }
 
 async function pay() {
+
     try {
         // 确保 flight 数据已加载
         if (!flightId.value) {
@@ -88,8 +154,7 @@ async function pay() {
         formData.value.seat_letter = seatLetter.value; // 添加座位字母到 formData
         // formData.value.flight = flight.value.id; // 确保传递的是 flight_id
         // console.log('formData:', formData.value)
-        // 发送购票请求之前，检查一下是否已经购买本票
-        await axios.post(`http://localhost:8000/api/order/check/`, formData.value);
+        
         // 没有购买直接创建订单
         await axios.post('http://localhost:8000/api/order/book/', formData.value);
         isPaid.value = true;
@@ -104,8 +169,8 @@ async function pay() {
         }, 1000);
     } catch (error) {
         console.error('Error creating order:', error);
+        errorLog.value = '创建订单失败，请稍后再试'
         showModal2.value = true;
-        alreadyPaid.value = true;
     }
 }
 
@@ -121,17 +186,24 @@ async function searchFlightById() {
 }
 
 async function fetchSeats() {
-    try {
-        const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}/seats/`);
-        seats.value = response.data.map(seat => ({
-            ...seat,
-            selected: false,
-            is_booked: seat.is_booked || false // 确保 is_booked 属性存在
-        }));
-    } catch (error) {
-        console.error('Error fetching seats:', error);
-        seats.value = []; // 确保 seats 不为 undefined
-    }
+  try {
+    const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}/seats/`);
+    
+    // 提取所有已预订座位号
+    const bookedSeats = response.data
+      .filter(seat => seat.status === 'booked')
+      .map(seat => seat.seat_number);
+
+    takenSeats.value = bookedSeats;
+
+  } catch (error) {
+    console.error('Error fetching seats:', error);
+  }
+}
+
+function handleSelect(seatName) {
+  selectedSeat.value = seatName;
+  formData.value.seat_letter = seatName; // 提交到订单
 }
 
 const closeModal = () => {
@@ -172,22 +244,28 @@ onMounted(() => {
                                 <label class="text-[18px] opacity-80 mb-0 font-medium" for="lName">姓名</label>
                                 <div class="mt-4 md:mt-3 mb-4">
                                     <input type="text" v-model="formData.name"
+                                        @input="formData.errorName = validateName(formData.name)"
                                         class="min-h-[48px] w-full leading-[36px] bg-transparent border boder-[#BBBFC8] dark:border-[#888993] pl-[24px] focus:outline focus:outline-blue-500 focus:border-none rounded-md opacity-75"
                                         id="lName" placeholder="姓名" />
+                                    <span v-if="formData.errorName" class="text-red-500 text-sm">{{ formData.errorName
+                                        }}</span>
                                 </div>
                             </div>
                             <div class="col-span-12 md:col-span-6 lg:col-span-2">
                                 <label class="text-[18px] opacity-80 mb-0 font-medium" for="bDate">年龄</label>
                                 <div class="mt-4 md:mt-3 mb-4">
                                     <input type="text" v-model="formData.age"
+                                        @input="formData.errorAge = validateAge(formData.age)"
                                         class="min-h-[48px] w-full leading-[36px] bg-transparent border boder-[#BBBFC8] dark:border-[#888993] pl-[24px] focus:outline focus:outline-blue-500 focus:border-none rounded-md opacity-75"
                                         id="bDate" placeholder="年龄" />
+                                    <span v-if="formData.errorAge" class="text-red-500 text-sm">{{ formData.errorAge
+                                        }}</span>
                                 </div>
                             </div>
                             <div class="col-span-12 md:col-span-6 lg:col-span-2">
-                                <label class="font-medium mb-0">性别</label>
+                                <label class="text-[18px] opacity-80 mb-0 font-medium">性别</label>
                                 <select v-model="formData.gender"
-                                    class="min-h-[48px] leading-[36px] border border-[#BBBFC8] dark:border-[#888993] dark:bg-[#2E2F41] text-gray-400 px-4 w-full focus:outline focus:outline-blue-500 focus:border-none mt-3 mb-4 rounded-md"
+                                    class=" min-h-[48px] leading-[36px] border border-[#BBBFC8] dark:border-[#888993] px-4 w-full focus:outline focus:outline-blue-500 focus:border-none mt-3 mb-4 rounded-md"
                                     aria-label="Default select example">
                                     <option value="男" selected>男</option>
                                     <option value="女">女</option>
@@ -198,29 +276,31 @@ onMounted(() => {
                         <div class="grid grid-cols-12 gap-4">
                             <!-- country -->
                             <div class="col-span-12 md:col-span-6 lg:col-span-4">
-                                <label class="font-medium mb-0">国籍</label>
+                                <label class="text-[18px] opacity-80 mb-0 font-medium">国籍</label>
                                 <select v-model="formData.country"
-                                    class="min-h-[48px] leading-[36px] border border-[#BBBFC8] dark:border-[#888993] dark:bg-[#2E2F41] text-gray-400 px-4 w-full focus:outline focus:outline-blue-500 focus:border-none mt-3 mb-4 rounded-md"
+                                    class="min-h-[48px] leading-[36px] border border-[#BBBFC8] dark:border-[#888993] dark:bg-[#2E2F41]  px-4 w-full focus:outline focus:outline-blue-500 focus:border-none mt-3 mb-4 rounded-md"
                                     aria-label="Default select example">
                                     <option value="中国" selected>中国</option>
                                     <option value="美国">美国</option>
                                     <option value="法国">法国</option>
                                     <option value="英国">英国</option>
-
                                 </select>
                             </div>
                             <!-- passport no -->
                             <div class="col-span-12 md:col-span-6 lg:col-span-4">
                                 <label class="text-[18px] opacity-80 mb-0 font-medium" for="passport">身份证/护照</label>
                                 <div class="mt-4 md:mt-3 mb-4">
-                                    <input type="" v-model="formData.passportNo"
+                                    <input type="text" v-model="formData.passportNo"
+                                        @input="formData.errorPassport = validatePassport(formData.passportNo)"
                                         class="min-h-[48px] w-full leading-[36px] bg-transparent border boder-[#BBBFC8] dark:border-[#888993] pl-[24px] focus:outline focus:outline-blue-500 focus:border-none rounded-md opacity-75"
-                                        id="passport"/>
+                                        id="passport" />
+                                    <span v-if="formData.errorPassport" class="text-red-500 text-sm">{{
+                                        formData.errorPassport }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-12 gap-4 mt-6">
+                    <div class=" gap-4 mt-6">
                         <div class="col-span-12">
                             <div class="flex items-center mb-4">
                                 <div class="w-[4px] h-[27px] rounded-md bg-[#0D6EFD]"></div>
@@ -228,12 +308,16 @@ onMounted(() => {
                             </div>
                             <div class="seat-map grid grid-cols-7 gap-2">
                                 <!-- 添加座位字母选择按钮 -->
-                                <div v-for="letter in ['A', 'B', 'C', 'D', 'E', 'F']" :key="letter" class="seat-letter w-10 h-10 flex items-center justify-center border border-gray-300 rounded cursor-pointer"
+                                <div v-for="letter in ['A', 'B', 'C', 'D', 'E', 'F']" :key="letter"
+                                    class="seat-letter w-10 h-10 flex items-center justify-center border border-gray-300 rounded cursor-pointer"
                                     :class="{ 'bg-blue-600 text-white': seatLetter === letter }"
                                     @click="selectSeatLetter(letter)">
                                     {{ letter }}
                                 </div>
                             </div>
+                        </div>
+                        <div>
+                            <!-- <Seat :flight-id="flightId" :taken-seats="takenSeats" @select-seat="handleSelect" /> -->
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-4 mt-6">
@@ -296,12 +380,14 @@ onMounted(() => {
                                 <div class="col-span-2 sm:col-span-1">
                                     <div
                                         class="min-h-[48px] bg-[#F2F6FD] dark:bg-[#3E435A] flex flex-col justify-center px-[16px] w-full rounded-md">
-                                        <input v-model="num" num type="number" placeholder="0" class=" bg-[#F2F6FD] dark:bg-[#3E435A]" />
+                                        <input v-model="num" num type="number" placeholder="0"
+                                            class=" bg-[#F2F6FD] dark:bg-[#3E435A] outline-none" />
                                     </div>
                                 </div>
                                 <div class="col-span-2 sm:col-span-3">
                                     <button type="reset"
-                                        class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{ num * 80 }}
+                                        class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{
+                                        num * 80 }}
                                     </button>
                                 </div>
                             </div>
@@ -317,7 +403,7 @@ onMounted(() => {
                                 </div>
                             </div>
                             <div class="col-span-12 md:col-span-4">
-                                <div @click="checked" 
+                                <div @click="checked"
                                     class="border border-transparent hover:border-blue-600 bg-transparent p-[24px] md:p-0 xl:p-[48px] rounded-md">
                                     <div class="p-[24px] md:p-4 xl:p-[48px]">
                                         <div class="flex items-center justify-center w-full">
@@ -356,7 +442,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-12 md:col-span-4">
-                                <div @click="checked" 
+                                <div @click="checked"
                                     class="border border-transparent hover:border-blue-600 bg-transparent p-[24px] md:p-0 xl:p-[48px] rounded-md">
                                     <div class="p-[24px] md:p-4 xl:p-[48px]">
                                         <div class="flex items-center justify-center w-full">
@@ -394,7 +480,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-12 md:col-span-4">
-                                <div @click="checked" 
+                                <div @click="checked"
                                     class="border border-transparent hover:border-blue-600 bg-transparent p-[24px] md:p-0 xl:p-[48px] rounded-md">
                                     <div class="p-[24px] md:p-4 xl:p-[48px]">
                                         <div class="flex items-center justify-center w-full">
@@ -441,14 +527,15 @@ onMounted(() => {
                                                 确认保险</h6>
                                         </div>
                                         <div class="col-span-6">
-                                            
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-span-2 sm:col-span-3">
                                 <button type="reset"
-                                    class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{ insprice }}
+                                    class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{
+                                    insprice }}
                                 </button>
                             </div>
                         </div>
@@ -472,19 +559,21 @@ onMounted(() => {
                                             </h6>
                                         </div>
                                         <div class="col-span-6">
-                                                <p class="mb-0 opacity-50">￥{{ parseFloat(flight.price) }}(基础机票) + ￥{{ num * 80 }}(行李托运) + ￥{{ insprice }}(保险)</p>
+                                            <p class="mb-0 opacity-50">￥{{ parseFloat(flight.price) }}(基础机票) + ￥{{ num *
+                                                80 }}(行李托运) + ￥{{ insprice }}(保险)</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
 
                             <div class="col-span-2 sm:col-span-3">
                                 <button type="reset"
-                                    class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{ parseFloat(flight.price) + (num * 80) + insprice  }}
+                                    class="text-white font-bold text-[20px] min-w-[90px] min-h-[48px] bg-blue-600 hover:bg-opacity-90 rounded">￥{{
+                                        parseFloat(flight.price) + (num * 80) + insprice }}
                                 </button>
                             </div>
                         </div>
-                    </div>    
+                    </div>
                 </div>
                 <div class="submit">
                     <div @click="submit"
@@ -495,50 +584,57 @@ onMounted(() => {
             </form>
         </div>
     </section>
-    <section v-if="showModal1" 
-    class="modal-overlay1 ezy__eporder1 light py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10">
+    <section v-if="showModal1"
+        class="modal-overlay1 ezy__eporder1 light py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10">
         <div class="container px-4 mx-auto">
             <div class="flex justify-center max-w-md mx-auto">
-            <div class="box bg-gray-100 dark:bg-slate-800 rounded-md overflow-hidden">
-                <div class="bg-slate-200 dark:bg-slate-700 relative p-6">
-                <div @click="showModal1 = false"
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full cursor-pointer border border-black dark:border-white flex justify-center items-center">
-                    <svg t="1741340923685" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1466" width="32" height="32"><path d="M0 0h1024v1024H0z" fill="#FF0033" fill-opacity="0" p-id="1467"></path><path d="M240.448 168l2.346667 2.154667 289.92 289.941333 279.253333-279.253333a42.666667 42.666667 0 0 1 62.506667 58.026666l-2.133334 2.346667-279.296 279.210667 279.274667 279.253333a42.666667 42.666667 0 0 1-58.005333 62.528l-2.346667-2.176-279.253333-279.253333-289.92 289.962666a42.666667 42.666667 0 0 1-62.506667-58.005333l2.154667-2.346667 289.941333-289.962666-289.92-289.92a42.666667 42.666667 0 0 1 57.984-62.506667z" fill="#111111" p-id="1468"></path></svg>
-                </div>
-                    <h5 class="text-xl font-bold">交易</h5>
-                    <h6 class="font-medium opacity-60">总价：￥{{ formData.price = parseFloat(flight.price) + num * 80 + insprice }}</h6>
-                </div>
-                <div class="text-center py-12 px-4">
-                    <div v-if="isPaid">
-                        <div
-                        class="relative left-1/2 -translate-x-1/2 w-10 h-10 text-[22px] rounded-full border border-blue-600 text-blue-600 flex justify-center items-center">
-                        <svg t="1741443205323" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2973" width="200" height="200"><path d="M512 93.090909c230.4 0 418.909091 188.509091 418.909091 418.909091s-188.509091 418.909091-418.909091 418.909091S93.090909 742.4 93.090909 512 281.6 93.090909 512 93.090909m0-93.090909C228.072727 0 0 228.072727 0 512s228.072727 512 512 512 512-228.072727 512-512S795.927273 0 512 0z" fill="#13cb1f" p-id="2974"></path><path d="M430.545455 716.8c-11.636364 0-23.272727-4.654545-32.581819-13.963636l-151.272727-151.272728c-18.618182-18.618182-18.618182-46.545455 0-65.163636 18.618182-18.618182 46.545455-18.618182 65.163636 0l118.69091 118.690909 281.6-281.6c18.618182-18.618182 46.545455-18.618182 65.163636 0 18.618182 18.618182 18.618182 46.545455 0 65.163636L463.127273 702.836364c-9.309091 9.309091-20.945455 13.963636-32.581818 13.963636z" fill="#13cb1f" p-id="2975"></path></svg>
+                <div class="box bg-white dark:bg-slate-800 rounded-md overflow-hidden">
+                    <div class="bg-slate-200 dark:bg-slate-700 relative p-6">
+                        <div @click="showModal1 = false"
+                            class="absolute top-5 right-5 cursor-pointer flex text-[#5A5B5F] justify-center items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                             <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
                         </div>
-                        <h1 class="text-2xl font-bold leading-none my-4">
-                            支付成功
-                        </h1>
-                        <p class="text-base opacity-80 px-12">{{ countdown }}秒后自动返回上一个页面</p>
-                        <p class="text-base opacity-80 px-12">
-                            您已支付成功，前往<router-link to="/mystickets" style="color: blue;">我的行程</router-link>中确认订单？
-                        </p>
-                        
+                        <h5 class="text-xl font-bold">交易</h5>
+                        <h6 class="font-medium opacity-60">总价：￥{{ formData.price = parseFloat(flight.price) + num * 80 +
+                            insprice }}</h6>
                     </div>
-                    <div v-else>
-                        <h1 class="text-2xl font-bold leading-none my-4">
-                            请您再次确认支付金额
-                        </h1>
-                        <p class="text-base opacity-80 px-12">
-                           ￥{{ formData.price }}
-                        </p>
-                        <button @click="pay" class="bg-blue-600 text-white hover:bg-opacity-90 rounded-md px-6 py-3 mt-6 mb-3">支付</button>
+                    <div class="text-center py-5 px-4">
+                        <div v-if="isPaid">
+                            <div
+                                class="relative left-1/2 -translate-x-1/2 w-10 h-10 text-[22px] rounded-full border border-blue-600 text-blue-600 flex justify-center items-center">
+                                <svg t="1741443205323" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="2973" width="200" height="200">
+                                    <path
+                                        d="M512 93.090909c230.4 0 418.909091 188.509091 418.909091 418.909091s-188.509091 418.909091-418.909091 418.909091S93.090909 742.4 93.090909 512 281.6 93.090909 512 93.090909m0-93.090909C228.072727 0 0 228.072727 0 512s228.072727 512 512 512 512-228.072727 512-512S795.927273 0 512 0z"
+                                        fill="#13cb1f" p-id="2974"></path>
+                                    <path
+                                        d="M430.545455 716.8c-11.636364 0-23.272727-4.654545-32.581819-13.963636l-151.272727-151.272728c-18.618182-18.618182-18.618182-46.545455 0-65.163636 18.618182-18.618182 46.545455-18.618182 65.163636 0l118.69091 118.690909 281.6-281.6c18.618182-18.618182 46.545455-18.618182 65.163636 0 18.618182 18.618182 18.618182 46.545455 0 65.163636L463.127273 702.836364c-9.309091 9.309091-20.945455 13.963636-32.581818 13.963636z"
+                                        fill="#13cb1f" p-id="2975"></path>
+                                </svg>
+                            </div>
+                            <h1 class="text-2xl font-bold leading-none my-4">
+                                支付成功
+                            </h1>
+                            <p class="text-base opacity-80 px-12">{{ countdown }}秒后自动返回上一个页面</p>
+                            <p class="text-base opacity-80 px-12">
+                                您已支付成功，前往<router-link to="/mystickets" style="color: blue;">我的行程</router-link>中确认订单？
+                            </p>
+
+                        </div>
+                        <div v-else>
+                            <img src="../assets/photos/收款码.jpg" alt="">
+                            <button @click="pay"
+                                class="bg-blue-600 text-white hover:bg-opacity-90 rounded-md px-25 py-3">支付￥{{ formData.price }}</button>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-slate-200 dark:bg-slate-700 text-center p-6">
-                    <div class="flex items-center justify-center">
-                        <i class="fas fa-lock mr-2"></i>
-                        <b>请确保当前网络安全</b>
-                    </div>
-                        <b>有问题? 0123 4567 891</b>
+                    <div class="bg-slate-200 dark:bg-slate-700 text-center p-5">
+                        <div class="flex items-center justify-center">
+                            <i class="fas fa-lock mr-2"></i>
+                            <b>请确保当前网络安全</b>
+                        </div>
+                        <b>有问题? 13111955065</b>
                     </div>
                 </div>
             </div>
@@ -550,18 +646,16 @@ onMounted(() => {
             <div class="box flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
                 <div class="flex items-center justify-center w-12 bg-yellow-400">
                     <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z" />
+                        <path
+                            d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z" />
                     </svg>
                 </div>
 
                 <div class="px-4 py-2 -mx-3">
                     <div class="mx-3">
                         <span class="font-semibold text-yellow-400 dark:text-yellow-300">警告</span>
-                        <p v-if="alreadyPaid" class="text-sm text-gray-600 dark:text-gray-200" >
-                            您已购买该机票，请勿重复购买。
-                        </p>
-                        <p v-if="isNull">
-                            请输入姓名和身份证等重要信息。
+                        <p class="text-gray-600 dark:text-gray-200 mt-1.5">
+                            {{ errorLog }}
                         </p>
                     </div>
                 </div>
@@ -629,6 +723,7 @@ onMounted(() => {
     justify-content: center;
     z-index: 1000;
 }
+
 .modal-overlay2 .box {
     width: 500px;
     height: 100px;

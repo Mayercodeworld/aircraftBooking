@@ -15,14 +15,14 @@ onMounted(() => {
 
 const loadDestination = (id) => {
   const staticData = [
-    { id: 1, place: '三亚', image: [{ src: 'https://pic.52112.com/2020/04/13/JPG-200413_328/gCaPae4zjp_small.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 2, place: '上海', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 3, place: '广州', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 4, place: '厦门', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 5, place: '香港', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 6, place: '杭州', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 7, place: '伦敦', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] },
-    { id: 8, place: '纽约', image: [{ src: 'https://b.zol-img.com.cn/sjbizhi/images/11/1080x1920/1592967802496.jpg', title: 'Image 1' }, { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },{src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3'}, { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },{ src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }] }
+    { id: 1, place: '三亚', image: [{ src: '/src/assets/photos/detail/sanya/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/sanya/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/sanya/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/sanya/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/sanya/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/sanya/6.png', title: 'Image 6' }] },
+    { id: 2, place: '上海', image: [{ src: '/src/assets/photos/detail/shanghai/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/shanghai/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/shanghai/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/shanghai/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/shanghai/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/shanghai/6.jpg', title: 'Image6' }]},
+    { id: 3, place: '广州', image: [{ src: '/src/assets/photos/detail/guangzhou/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/guangzhou/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/guangzhou/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/guangzhou/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/guangzhou/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/guangzhou/6.jpg', title: 'Image 6' }]},
+    { id: 4, plage: '厦门', image: [{ src: '/src/assets/photos/detail/xiamen/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/xiamen/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/xiamen/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/xiamen/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/xiamen/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/xiamen/6.jpg', title: 'Image6' }]},
+    { id: 5, place: '香港', image: [{ src: '/src/assets/photos/detail/hongkong/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/hongkong/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/hongkong/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/hongkong/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/hongkong/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/hongkong/6.jpg', title: 'Image 6' }]},
+    { id: 6, place: '杭州', image: [{ src: '/src/assets/photos/detail/hangzhou/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/hangzhou/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/hangzhou/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/hangzhou/4.jpg', title:'Image 4' }, { src: '/src/assets/photos/detail/hangzhou/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/hangzhou/6.jpg', title: 'Image 6' }]},
+    { id: 7, place: '伦敦', image: [{ src: '/src/assets/photos/detail/london/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/london/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/london/3.jpg', title: 'Image' }, { src: '/src/assets/photos/detail/london/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/london/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/london/6.jpg', title: 'Image 6' }, { src: '/src/assets/photos/detail/london/7.jpg', title: 'Image 7' }, { src: '/src/assets/photos/detail/london/8.jpg', title: 'Image 8' }]},
+    { id: 8, place: '纽约', image: [{ src: '/src/assets/photos/detail/newyork/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/newyork/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/newyork/3.jpg', title:'Image 3' }, { src: '/src/assets/photos/detail/newyork/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/newyork/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/newyork/6.jpg', title: 'Image 6'}]},
   ];
 
   const destination = staticData.find(dest => dest.id === id);
@@ -38,18 +38,12 @@ const loadDestination = (id) => {
 
 const currentIndex = ref(0); // 当前显示的第一张图片的索引
 
-// 使用 computed 确保 images 是响应式的
+// 使用 computed 确保 images 是响应式的，默认图片的加载
 const images = computed(() => images_collections.value || [
-  { src: 'https://img1.qunarzz.com/travel/d5/1606/78/f159a24f7a0672f7.jpg?color=#2b79bf', title: 'Image 1' },
-  { src: 'https://dimg04.c-ctrip.com/images/100g10000000pf92gD939_R_1600_10000.jpg', title: 'Image 2' },
-  { src: 'https://img.keaitupian.cn/uploads/2021/09/15/br4mlga54st.jpg', title: 'Image 3' },
-  { src: 'https://dimg04.c-ctrip.com/images/100c0e0000006zxz0B249_R_1600_10000.jpg', title: 'Image 4' },
-  { src: 'https://dimg04.c-ctrip.com/images/0100r12000f6tbgy71A1D_C_1600_1200.jpg', title: 'Image 5' }
+  { src: '/src', title: 'Image 1' },
+  { src: '', title: 'Image 2' },
+  { src: '', title: 'Image 3' },
 ]);
-
-console.log("id:", id);
-console.log("images_collections:", images_collections.value);
-console.log("images:", images.value);
 
 // 计算当前显示的三个图片
 const currentImages = computed(() => {
@@ -74,7 +68,7 @@ const nextImage = () => {
 <template>
   <section class="ezy__blog11 max-h-[500px] relative light py-14 md:py-24 text-stone-800 bg-white dark:bg-[#0b1727] dark:text-white overflow-hidden">
     <div class="absolute top-0 z-0 h-screen w-screen bg-white bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-    <div class="container px-8 md:px-24">
+    <div class="container px-8 md:px-24 m-auto">
       <div class="grid grid-cols-12">
 
         <div class="col-span-12">
@@ -85,12 +79,11 @@ const nextImage = () => {
                 <div class="rounded-lg overflow-hidden">
                   <div class="relative">
                     <img :src="image.src" alt="" class="w-full" />
-                    <!-- <div class="absolute bottom-0 flex flex-col justify-center items-center w-full text-white px-12 pb-6 text-center">
+                    <div class="absolute bottom-0 flex flex-col justify-center items-center w-full text-white px-12 pb-6 text-center">
                       <h4 class="text-[22px] font-medium">{{ image.title }}</h4>
-                      <h5 class="text-[22px] font-medium text-blue-600 my-3">£20</h5>
-                      <a href="#" class="bg-transparent hover:bg-blue-600 border border-blue-600 hover:text-white py-2 rounded transition text-blue-600 px-9 mb-3">Add To Cart</a>
-                      <p class="text-base opacity-80">PDF Format</p>
-                    </div> -->
+                      <!-- <h5 class="text-[22px] font-medium text-blue-600 my-3">£20</h5> -->
+                      <!-- <a href="#" class="bg-transparent hover:bg-blue-600 border border-blue-600 hover:text-white py-2 rounded transition text-blue-600 px-9 mb-3">Add To Cart</a> -->
+                    </div>
                   </div>
                 </div>
               </div>

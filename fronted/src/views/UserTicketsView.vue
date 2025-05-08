@@ -73,7 +73,7 @@ const formatDate = (dateString) => {
             </tr>
             </thead>
             <tbody class="sm:text-lg font-medium align-baseline">
-            <tr v-for="order in orders" :key="order.order_id">
+            <tr v-for="order in orders" :key="order.order_id" class="nth-child(odd):bg-white">
               <td class="py-5">{{ order.flight.flight_no }}</td>
               <td class="py-5">{{ formatDate(order.flight.departure_time) }}</td>
               <td class="py-5">￥{{ order.price }}</td>

@@ -7,6 +7,7 @@ const router = useRouter();
 const showModal = ref(false); 
 const activeCityPicker = ref(null);
 const activeTab = ref('热门');
+const proData = ref('其他错误')
 
 // 接收父组件传递的 searchFlights 方法
 const props = defineProps({
@@ -16,12 +17,28 @@ const props = defineProps({
     }
 });
 const searchFlights = () => {
-    if (!formData.from || !formData.to || !formData.depart) {
+    if (!formData.from) {
         showModal.value = true; 
+        proData.value = '请选择或者输入出发地'
         document.body.style.overflow = 'hidden';
         return;
+    } 
+    if (!formData.to) {
+        showModal.value = true; 
+        proData.value = '请选择或者输入目的地';
+        return;
+    } 
+    if (!formData.depart) {
+        showModal.value = true; 
+        proData.value = '请选择或者输入出发时间';
+        return;
     }
-    
+    if (formData.from == formData.to) {
+        showModal.value = true;
+        proData.value = '出发地与目的地不能相同';
+        return;
+    }
+    console.log(formData.depart)
     // 检查当前路由是否为 /ticket
     if (router.currentRoute.value.path === '/ticket') {
         if (props.searchFlights) {
@@ -256,7 +273,7 @@ const selectCity = (city, type) => {
                     <div class="mx-3">
                         <span class="font-semibold text-yellow-400 dark:text-yellow-300">警告</span>
                         <p class="text-sm text-gray-600 dark:text-gray-200">
-                            请选择出发地、目的地或者出发时间。
+                            {{ proData }}
                         </p>
                     </div>
                 </div>
@@ -305,7 +322,7 @@ a.search-btn {
 }
 
 .city-picker-wrapper {
-    z-index: 12;
+    z-index: 15;
 }
 
 .city-picker-tabs {
@@ -328,15 +345,14 @@ a.search-btn {
 }
 
 .city-picker-body {
+    padding: 0px 20px;
     max-height: 200px;
     overflow-y: auto;
 }
 
-city-picker-body .city-character{
-    
-    /* display: inline-block; */
+.city-picker-body .city-character{
+    margin-top: 5px;
     width: 10px;
-
 }
 
 .city-picker-body ul {
@@ -354,5 +370,4 @@ city-picker-body .city-character{
 .city-picker-body ul li:hover {
     background-color: #f0f0f0;
 }
-
 </style>
