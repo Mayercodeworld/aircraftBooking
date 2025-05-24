@@ -56,14 +56,13 @@ const handle = async () => {
 
 <template>
   <header class="header body-font">
-    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-      <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
-             stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-             class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+    <div class="container min-w-1/1 flex flex-wrap p-5 items-center">
+      <a class="flex title-font font-medium items-center pl-12 text-gray-900 mb-4 md:mb-0">
+        <svg t="1748092939282" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5496" width="32" height="32">
+          <path d="M936.490667 431.445333a64 64 0 0 1-45.226667 78.378667L222.762667 688.938667a42.666667 42.666667 0 0 1-48.341334-20.48L62.549333 466.773333l61.824-16.554666 105.258667 104.32 217.429333-58.24-192.426666-301.824 82.389333-22.101334 296.618667 273.92 224.426666-60.16a64 64 0 0 1 78.421334 45.226667zM170.666667 810.666667h682.666666v85.333333H170.666667v-85.333333z" fill="#000000" p-id="5497">
+          </path>
         </svg>
-        <span class="ml-3 text-xl">Tailblocks</span>
+        <span class="ml-3 text-xl">Tickets</span>
       </a>
       <nav class="md:ml-auto md:mr-auto rounded-2xl border box-border font-[800] h-9 leading-9 min-w-1/10 flex text-center">
         <div @click="currentpage = '首页'" class="min-w-1/2 rounded-2xl hover:bg-indigo-400 hover:text-white h-full" 

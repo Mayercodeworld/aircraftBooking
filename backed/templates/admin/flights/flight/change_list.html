@@ -8,13 +8,6 @@
     </script>
 {% endblock %}
 
-{% block object-tools-items %}
-    {{ block.super }}
-    <li>
-        <button id="batch-import-btn" class="button">批量导入</button>
-    </li>
-{% endblock %}
-
 {% block content %}
     {{ block.super }}
 
@@ -22,7 +15,7 @@
     <div id="importModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>批量导入航班信息</h2>
+            <h1>批量导入航班信息</h1>
             <form id="importForm">
                 <label for="departureCity">出发地城市:</label>
                 <input type="text" id="departureCity" name="departure_city" required><br><br>
@@ -48,24 +41,76 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.6);
+            transition: background-color 0.3s ease;
         }
+
         .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background-color: #fff;
+            margin: 8% auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            width: 40%;
+            max-width: 600px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            border-radius: 8px;
+        }
+
+        .modal-content h1 {
+            font-size: 50px;
+            font-weight: 900;
+            text-align: center;
         }
         .close {
             color: #aaa;
-            float: right;
-            font-size: 28px;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s ease;
         }
-        .close:hover { color: black; }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .modal input[type="text"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal button:hover {
+            background-color: #0056b3;
+        }
     </style>
 {% endblock %}
 
@@ -75,7 +120,7 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             // =========== 模态框显示逻辑 ===========
-            var batchImportBtn = document.getElementById('batch-import-btn');
+            var batchImportBtn = document.querySelector('.actions button[data-name="batch_import"]');
             var importModal = document.getElementById('importModal');
             var closeModalBtn = document.querySelector('.modal .close');
 

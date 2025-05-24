@@ -6,10 +6,12 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from django.db import IntegrityError
 from .flightSpider import getFlights
+
+admin.site.register(Aircraft)
 @admin.register(Flight)
 class FlightAdmin(admin.ModelAdmin):
     list_display = ('flight_no', 'departure_time', 'departure_city', 'arrival_city', 'price', 'airline')
-    list_filter = ('departure_city', 'arrival_city', 'airline')
+    list_filter = ('departure_city', 'arrival_city', 'airline', 'departure_time')
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [

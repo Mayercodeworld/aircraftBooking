@@ -123,7 +123,7 @@ onUnmounted(() => {
         <div class="chatbox relative p-0 h-[440px] max-w-3xl max-h-100 lg:px-8 lg:py-14 mx-auto overflow-y-auto rounded-lg">
             <div class="text-center">
                 <h2 class="text-2xl min-h-1 font-bold text-gray-800">
-                    🤗Hello, 我是星火旅游小助手，您当前浏览的是美丽的{{ props.place }}哦🥰
+                    Hello, 您当前浏览的是美丽的{{ props.place }}哦🥰
                 </h2>
             </div>
 

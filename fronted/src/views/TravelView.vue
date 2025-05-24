@@ -17,14 +17,14 @@ onMounted(() => {
 
 const loadDestination = (id) => {
   const staticData = [
-    { id: 1, place: '三亚', image: [{ src: '/src/assets/photos/detail/sanya/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/sanya/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/sanya/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/sanya/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/sanya/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/sanya/6.png', title: 'Image 6' }] },
-    { id: 2, place: '上海', image: [{ src: '/src/assets/photos/detail/shanghai/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/shanghai/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/shanghai/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/shanghai/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/shanghai/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/shanghai/6.jpg', title: 'Image6' }]},
-    { id: 3, place: '广州', image: [{ src: '/src/assets/photos/detail/guangzhou/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/guangzhou/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/guangzhou/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/guangzhou/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/guangzhou/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/guangzhou/6.jpg', title: 'Image 6' }]},
-    { id: 4, plage: '厦门', image: [{ src: '/src/assets/photos/detail/xiamen/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/xiamen/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/xiamen/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/xiamen/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/xiamen/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/xiamen/6.jpg', title: 'Image6' }]},
-    { id: 5, place: '香港', image: [{ src: '/src/assets/photos/detail/hongkong/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/hongkong/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/hongkong/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/hongkong/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/hongkong/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/hongkong/6.jpg', title: 'Image 6' }]},
-    { id: 6, place: '杭州', image: [{ src: '/src/assets/photos/detail/hangzhou/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/hangzhou/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/hangzhou/3.jpg', title: 'Image 3' }, { src: '/src/assets/photos/detail/hangzhou/4.jpg', title:'Image 4' }, { src: '/src/assets/photos/detail/hangzhou/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/hangzhou/6.jpg', title: 'Image 6' }]},
-    { id: 7, place: '伦敦', image: [{ src: '/src/assets/photos/detail/london/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/london/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/london/3.jpg', title: 'Image' }, { src: '/src/assets/photos/detail/london/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/london/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/london/6.jpg', title: 'Image 6' }, { src: '/src/assets/photos/detail/london/7.jpg', title: 'Image 7' }, { src: '/src/assets/photos/detail/london/8.jpg', title: 'Image 8' }]},
-    { id: 8, place: '纽约', image: [{ src: '/src/assets/photos/detail/newyork/1.jpg', title: 'Image 1' }, { src: '/src/assets/photos/detail/newyork/2.jpg', title: 'Image 2' }, { src: '/src/assets/photos/detail/newyork/3.jpg', title:'Image 3' }, { src: '/src/assets/photos/detail/newyork/4.jpg', title: 'Image 4' }, { src: '/src/assets/photos/detail/newyork/5.jpg', title: 'Image 5' }, { src: '/src/assets/photos/detail/newyork/6.jpg', title: 'Image 6'}]},
+    { id: 1, place: '三亚', image: [{ src: '/src/assets/photos/detail/sanya/1.jpg', title: '椰梦长廊' }, { src: '/src/assets/photos/detail/sanya/2.jpg', title: '鹿回头' }, { src: '/src/assets/photos/detail/sanya/3.jpg', title: '亚龙湾' }, { src: '/src/assets/photos/detail/sanya/4.jpg', title: '天涯海角' }, { src: '/src/assets/photos/detail/sanya/5.jpg', title: '鹿回头' }, { src: '/src/assets/photos/detail/sanya/6.png', title: '南海观音' }] },
+    { id: 2, place: '上海', image: [{ src: '/src/assets/photos/detail/shanghai/1.jpg', title: '陆家嘴' }, { src: '/src/assets/photos/detail/shanghai/2.jpg', title: '东方明珠塔' }, { src: '/src/assets/photos/detail/shanghai/3.jpg', title: '上海夜景' }, { src: '/src/assets/photos/detail/shanghai/4.jpg', title: '夜晚立交桥' }, { src: '/src/assets/photos/detail/shanghai/5.jpg', title: '金融中心' }, { src: '/src/assets/photos/detail/shanghai/6.jpg', title: '上海魔都' }]},
+    { id: 3, place: '广州', image: [{ src: '/src/assets/photos/detail/guangzhou/1.jpg', title: '珠江新城' }, { src: '/src/assets/photos/detail/guangzhou/2.jpg', title: '广州夜景' }, { src: '/src/assets/photos/detail/guangzhou/3.jpg', title: '小蛮腰' }, { src: '/src/assets/photos/detail/guangzhou/4.jpg', title: '金融中心' }, { src: '/src/assets/photos/detail/guangzhou/5.jpg', title: '广州' }, { src: '/src/assets/photos/detail/guangzhou/6.jpg', title: '广州恩宁路' }]},
+    { id: 4, place: '厦门', image: [{ src: '/src/assets/photos/detail/xiamen/1.jpg', title: '厦门八市小吃街' }, { src: '/src/assets/photos/detail/xiamen/2.jpg', title: '厦门月光环' }, { src: '/src/assets/photos/detail/xiamen/3.jpg', title: '厦门世茂双子塔' }, { src: '/src/assets/photos/detail/xiamen/4.jpg', title: '厦门中山路步行街' }, { src: '/src/assets/photos/detail/xiamen/5.jpg', title: '清水宫' }, { src: '/src/assets/photos/detail/xiamen/6.jpg', title: '鼓浪屿' }]},
+    { id: 5, place: '香港', image: [{ src: '/src/assets/photos/detail/hongkong/1.jpg', title: '维多利亚港' }, { src: '/src/assets/photos/detail/hongkong/2.jpg', title: '维多利亚港' }, { src: '/src/assets/photos/detail/hongkong/3.jpg', title: '叮叮车' }, { src: '/src/assets/photos/detail/hongkong/4.jpg', title: '弥敦道' }, { src: '/src/assets/photos/detail/hongkong/5.jpg', title: '金紫荆广场' }, { src: '/src/assets/photos/detail/hongkong/6.jpg', title: '香港烟火气' }]},
+    { id: 6, place: '杭州', image: [{ src: '/src/assets/photos/detail/hangzhou/1.jpg', title: '杭州奥体中心' }, { src: '/src/assets/photos/detail/hangzhou/2.jpg', title: '双子塔' }, { src: '/src/assets/photos/detail/hangzhou/3.jpg', title: '三潭印月' }, { src: '/src/assets/photos/detail/hangzhou/4.jpg', title:'雷峰塔' }, { src: '/src/assets/photos/detail/hangzhou/5.jpg', title: '杭州法喜寺' }, { src: '/src/assets/photos/detail/hangzhou/6.jpg', title: '西湖' }]},
+    { id: 7, place: '伦敦', image: [{ src: '/src/assets/photos/detail/london/1.jpg', title: '碎片大厦' }, { src: '/src/assets/photos/detail/london/2.jpg', title: '伦敦公共交通' }, { src: '/src/assets/photos/detail/london/3.jpg', title: '伊丽莎白塔' }, { src: '/src/assets/photos/detail/london/4.jpg', title: '特拉法加广场' }, { src: '/src/assets/photos/detail/london/5.jpg', title: '泰晤士河畔' }, { src: '/src/assets/photos/detail/london/6.jpg', title: '伦敦塔桥' }, { src: '/src/assets/photos/detail/london/7.jpg', title: '伦敦街道' }, { src: '/src/assets/photos/detail/london/8.jpg', title: '摄政街' }]},
+    { id: 8, place: '纽约', image: [{ src: '/src/assets/photos/detail/newyork/1.jpg', title: '帝国大厦' }, { src: '/src/assets/photos/detail/newyork/2.jpg', title: '天际线' }, { src: '/src/assets/photos/detail/newyork/3.jpg', title:'自由塔' }, { src: '/src/assets/photos/detail/newyork/4.jpg', title: '帝国大厦' }, { src: '/src/assets/photos/detail/newyork/5.jpg', title: '曼哈顿市中心' }, { src: '/src/assets/photos/detail/newyork/6.jpg', title: '自由女神像'}]},
   ];
 
   const destination = staticData.find(dest => dest.id === id);
@@ -109,9 +109,9 @@ const nextImage = () => {
   </section>
   <div class="more">
     <Spark :place="place"></Spark>
-    <MapContainer />
+    <MapContainer :place="place"></MapContainer>
   </div>
-  
+
 </template>
 
 <style scoped>
@@ -158,6 +158,6 @@ const nextImage = () => {
   margin: 0 auto;
   width: 85%;
   align-items: center;
-  justify-content: space-between;  
+  justify-content: space-between;
 }
 </style>
