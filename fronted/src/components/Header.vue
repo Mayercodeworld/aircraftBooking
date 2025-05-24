@@ -65,7 +65,7 @@ const handle = async () => {
         </svg>
         <span class="ml-3 text-xl">Tailblocks</span>
       </a>
-      <nav class="md:ml-auto md:mr-auto rounded-2xl border box-border bg-white h-9 leading-9 min-w-1/10 flex text-center">
+      <nav class="md:ml-auto md:mr-auto rounded-2xl border box-border font-[800] h-9 leading-9 min-w-1/10 flex text-center">
         <div @click="currentpage = '首页'" class="min-w-1/2 rounded-2xl hover:bg-indigo-400 hover:text-white h-full" 
         :class="{ 'bg-indigo-500 text-white': currentpage === '首页'}">
           <router-link to="/" class="block w-full">

@@ -98,13 +98,13 @@ async function sendMessage() {
     }
 }
 
-// 监听 place 的变化
-watch(() => props.place, async (newPlace) => {
-    if (newPlace) {
-        newQuestion.value = `你是${newPlace}当地的资深导游,现在需要你简单介绍一下当地有什么值得游玩的地方,倡议大家过来游玩，最好使用几个表情`;
-        await sendMessage();
-    }
-});
+// // 监听 place 的变化
+// watch(() => props.place, async (newPlace) => {
+//     if (newPlace) {
+//         newQuestion.value = `你是${newPlace}当地的资深导游,现在需要你简单介绍一下当地有什么值得游玩的地方,倡议大家过来游玩，最好使用几个表情`;
+//         await sendMessage();
+//     }
+// });
 
 // // 在组件挂载时检查 place 是否已经有值
 // onMounted(async () => {
@@ -119,8 +119,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative ">
-        <div class="chatbox relative p-0 max-w-4xl  max-h-10 lg:px-8 lg:py-14 mx-auto overflow-y-scroll rounded-lg">
+    <div class="relative w-[48%] h-[450px]">
+        <div class="chatbox relative p-0 h-[440px] max-w-3xl max-h-100 lg:px-8 lg:py-14 mx-auto overflow-y-auto rounded-lg">
             <div class="text-center">
                 <h2 class="text-2xl min-h-1 font-bold text-gray-800">
                     🤗Hello, 我是星火旅游小助手，您当前浏览的是美丽的{{ props.place }}哦🥰
@@ -157,7 +157,7 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-        <div class="relative mt-[10px] min-w-3xl max-w-4xl flex mx-auto rounded-xl">
+        <div class="relative mt-[5px] max-w-4xl flex mx-auto rounded-xl shadow-lg">
             <input type="text" v-model="newQuestion" @keydown.enter="sendMessage"  class="w-full h-[48px] pl-[10px] border box-border-2 focus:outline-blue-500 focus:outline-offset-3 focus:border-none leading-[36px] bg-transparent text-[#3b3b3b] rounded-md placeholder:text-gray justify-between" placeholder="有问题请尽管问我哦🤔">
             <div class="absolute right-0 flex items-center gap-x-1">
                 <button @click="sendMessage"
@@ -178,7 +178,8 @@ onUnmounted(() => {
 .chatbox {
     border: 1px solid #000;
     width: 100%;
-    min-height: 60vh;
+    height: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 .sender {
     :deep(.el-textarea__inner) {

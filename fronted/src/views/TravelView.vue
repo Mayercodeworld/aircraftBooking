@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+
 import Spark from '@/components/Spark.vue';
+import MapContainer from '@/components/MapContainer.vue';
 
 const route = useRoute();
 const id = parseInt(route.params.id, 10); // 将 id 转换为数字类型， 10代表十进制
@@ -92,14 +94,12 @@ const nextImage = () => {
             <!-- 左右按钮 -->
             <button
               @click="prevImage"
-              class="w-12 h-12 text-[22px] bg-blue-600 bg-opacity-70 hover:bg-opacity-100 text-white rounded-full absolute top-2/4 -left-6 -translate-y-1/2 transition"
-            >
+              class="w-12 h-12 text-[22px] bg-blue-600 bg-opacity-70 hover:bg-opacity-100 text-white rounded-full absolute top-2/4 -left-6 -translate-y-1/2 transition">
               <
             </button>
             <button
               @click="nextImage"
-              class="w-12 h-12 text-[22px] bg-blue-600 bg-opacity-70 hover:bg-opacity-100 text-white rounded-full absolute top-2/4 -right-6 -translate-y-1/2 transition"
-            >
+              class="w-12 h-12 text-[22px] bg-blue-600 bg-opacity-70 hover:bg-opacity-100 text-white rounded-full absolute top-2/4 -right-6 -translate-y-1/2 transition">
               >
             </button>
           </div>
@@ -107,7 +107,11 @@ const nextImage = () => {
       </div>
     </div>
   </section>
-  <Spark :place="place"></Spark>
+  <div class="more">
+    <Spark :place="place"></Spark>
+    <MapContainer />
+  </div>
+  
 </template>
 
 <style scoped>
@@ -147,5 +151,13 @@ const nextImage = () => {
 
 .translate-x-full {
   transform: translateX(100%);
+}
+
+.more {
+  display: flex;
+  margin: 0 auto;
+  width: 85%;
+  align-items: center;
+  justify-content: space-between;  
 }
 </style>

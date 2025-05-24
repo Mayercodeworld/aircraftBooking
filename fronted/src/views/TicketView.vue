@@ -154,7 +154,7 @@ async function searchFlights() {
         });
       // 保存 formData 到 localStorage
     localStorage.setItem('formData', JSON.stringify(formData));
-    console.log("flight: ",flightsData.value[0]);
+    console.log("flight: ",flightsData.value);
 
     } catch (error) {
         console.error('Error fetching flights:', error);

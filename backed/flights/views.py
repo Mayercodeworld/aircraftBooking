@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Flight
+from .models import Seat
 from .forms import FlightForm
 from .serializers import FlightSerializer
 from .serializers import SeatSerializer
@@ -28,6 +29,59 @@ def get_seats(request, flight_id):
     seats = flight.seats.all()
     serializer = SeatSerializer(seats, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def book_seat(request, flight_id):   
+    data = request.data
+    seat_number = data.get('seat_number')
+
+    flight = get_object_or_404(Flight, id=flight_id)
+
+    # 防止超卖
+    if flight.remaining_seats <= 0:
+        return Response({'error': '该航班已无剩余座位'}, status=status.HTTP_400_BAD_REQUEST)
+
+    seat, created = Seat.objects.get_or_create(
+        flight=flight,
+        seat_number=seat_number,
+        defaults={'status': 'booked'}
+    )
+
+    if not created:
+        if seat.status == 'booked':
+            return Response({'error': '该座位已被预订'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            seat.status = 'booked'
+            seat.save()
+
+    serializer = SeatSerializer(seat)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def cancel_seat(request, flight_id):
+    data = request.data
+    seat_number = data.get('seat_number')
+
+    flight = get_object_or_404(Flight, id=flight_id)
+
+    seat, created = Seat.objects.get_or_create(
+        flight=flight,
+        seat_number=seat_number,
+        defaults={'status': 'booked'}
+    )
+
+    if created:
+        # 新建的座位无法取消（因为不是预订状态）
+        return Response({'error': '该座位未被预订'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if seat.status != 'booked':
+        return Response({'error': '该座位未被预订，无法取消'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # 将座位设为可用
+    seat.status = 'available'
+    seat.save()
+
+    return Response({'message': '座位取消成功'}, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])    
 def get_flights(request):

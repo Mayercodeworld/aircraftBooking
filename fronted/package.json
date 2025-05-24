@@ -10,6 +10,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
     "buefy": "npm:@ntohq/buefy-next@^0.2.0",

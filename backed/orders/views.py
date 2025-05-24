@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import transaction
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -43,8 +44,9 @@ def get_user_tickets(request, user_id):
 def is_order_exist(request):
     request.data['user'] = int(request.data.get('user'))
     request.data['flight'] = int(request.data.get('flight'))
+    # print(request.data)
     if existing(request):
-        return Response({'code': 401, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'code': 401, 'msg': '订单已存在，请勿重复购买'}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'code': 0, 'msg': '该用户没有相同的订单'}, status=status.HTTP_200_OK)
     
 def existing(request):
@@ -53,55 +55,41 @@ def existing(request):
         flight=request.data.get('flight'), 
         passportNo=request.data.get('passportNo'), 
         name=request.data.get('name'), 
-        status='等待出行'
+        status__in=['等待出行', '进行中']
     ).first()
+    print(existing_order)
     if existing_order:
         return True
     return False
     
 @api_view(['POST'])
 def create_order(request):
-    print('request data:', request.data)
+    # print('request data:', request.data)
     user = int(request.data.get('user'))
     flight = int(request.data.get('flight'))
     # 一定要注意整形数字
     request.data['user'] = user
     request.data['flight'] = flight
-    seat_letter = request.data.get('seat_letter')  # 获取用户选择的座位字母
-
-    # # 需要改进筛选方法 
-    # if existing(request):
-    #     return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
-    existing_order = Order.objects.filter(user=user, flight=flight, passportNo=request.data.get('passportNo'), name=request.data.get('name'), status='等待出行').first()
-    if existing_order:
-        return Response({'code': 1, 'msg': '该用户已经存在相同的订单'}, status=status.HTTP_400_BAD_REQUEST)
     
-    flight = Flight.objects.filter(id=flight).first()
+    flight = Flight.objects.select_related('aircraft').filter(id=flight).first()
     if not flight:
         return Response({'code': 1, 'msg': '航班不存在'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    available_seats = flight.seats.filter(status='available')
-    if not available_seats.exists():
-        return Response({'code': 1, 'msg': '没有可用的座位'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    if seat_letter:
-        seat = Seat.get_sequential_seat(flight, seat_letter)
-        print(seat)
-        if not seat:
-            return Response({'code': 1, 'msg': '选择的座位不可用'}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        # 没有提供座位字母
-        seat = available_seats.order_by('seat_number').first()
-    
-    seat.status = 'booked'
-    seat.save()
-    request.data['seat'] = seat.id
+
+    seat_id = request.data.get('seat')
+    if not seat_id:
+        return Response({'code': 1, 'msg': '未指定座位'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        seat = Seat.objects.get(id=seat_id, flight=flight)
+        if seat.status != 'booked':
+            return Response({'code': 1, 'msg': '座位未预订，请先完成预订'}, status=status.HTTP_400_BAD_REQUEST)
+    except Seat.DoesNotExist:
+        return Response({'code': 1, 'msg': '座位不存在或不属于当前航班'}, status=status.HTTP_400_BAD_REQUEST)
+
     serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response({'code': 0, 'msg': '订单创建成功'},  status=status.HTTP_201_CREATED)
+        return Response({'code': 0, 'msg': '订单创建成功'}, status=status.HTTP_201_CREATED)
     else:
-        # print('Validation errors:', serializer.errors)  # 打印验证错误信息
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

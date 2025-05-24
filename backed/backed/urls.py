@@ -26,6 +26,8 @@ urlpatterns = [
     path('back/flights/', flights_views.get_flights, name='get_flights'),
     path('api/flights/<int:flight_id>/', flights_views.get_flight, name='get_flight'),
     path('api/flights/<int:flight_id>/seats/', flights_views.get_seats, name='get_seats'),
+    path('api/flights/<int:flight_id>/book/', flights_views.book_seat, name='book_seat'),
+    path('api/flights/<int:flight_id>/cancel/', flights_views.cancel_seat, name='cancel_seat'),
     path('api/register/', user_views.register),
     path('api/login/', user_views.login),
     path('api/user/<int:user_id>/', user_views.get_user_token),

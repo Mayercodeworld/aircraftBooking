@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import Seat from  '@/components/Seat.vue';
 import { useAuthStore } from '../stores/user_store.js';
 import axios from 'axios';
 import router from '@/router';
@@ -16,9 +17,10 @@ const flightId = ref(route.params.id);
 const loading = ref(true);
 const isPaid = ref(false);
 const errorLog = ref('');
-// const isNull = ref(false);
 const countdown = ref(5);
 const authStore = useAuthStore();
+
+const selectedSeat = ref('')
 
 const formData = ref({
     user: authStore.user_id,
@@ -33,8 +35,6 @@ const formData = ref({
     errorAge: '',
     errorPassport: ''
 });
-
-const seatLetter = ref(null); // 新增座位字母字段
 
 function validateName(value) {
     const trimmedValue = value.trim();
@@ -100,78 +100,84 @@ function checked(event) {
     }
 }
 
-// function selectSeat(seat) {
-//     if (seat.is_booked) {
-//         alert('该座位已被预订');
-//         return;
-//     }
-//     formData.value.seat = seat.id;
-//     seats.value.forEach(s => {
-//         s.selected = s.id === seat.id;
-//     });
-// }
-
-function selectSeatLetter(letter) {
-    seatLetter.value = letter;
-}
-
+// 提交订单
 async function submit() {
-    
     // 验证所有字段
     formData.value.errorName = validateName(formData.value.name);
     formData.value.errorAge = validateAge(formData.value.age);
     formData.value.errorPassport = validatePassport(formData.value.passportNo);
-
-    // 检查是否有错误信息
-    if (formData.value.errorName || formData.value.errorAge || formData.value.errorPassport) {
-        showModal2.value = true;
-        errorLog.value = '请确保所有输入信息格式正确'
-        return;
-    }
-
-    try{
-        await axios.post('http://localhost:8000/api/order/check/', formData.value);
-    } catch (error) {
-        errorLog.value = '订单已存在，请勿重复购买'
-        showModal2.value = true;
-        return;
-    }
-    // 如果没有错误，继续执行提交操作
-    showModal1.value = true;
-}
-
-async function pay() {
-
-    try {
-        // 确保 flight 数据已加载
-        if (!flightId.value) {
+    // 确保 flight 数据已加载
+    if (!flightId.value) {
             console.error('Flight data is not loaded or invalid');
             return;
         }
-
+    // 检查信息格式
+    if (formData.value.errorName || formData.value.errorAge || formData.value.errorPassport) {
+        showModal2.value = true;
+        errorLog.value = '请确保所有输入信息格式正确/完整'
+        return;
+    }
+    // 检查是否选择座位
+    if (!selectedSeat.value) {
+        showModal2.value = true
+        errorLog.value = '请先选择一个座位'
+        return
+    }
+    // 检查订单是否已存在
+    try{
+        await axios.post('http://localhost:8000/api/order/check/', formData.value);
+    } catch (error) {
+        // 订单已存在
+        console.error('Error creating order:', error.response.data);
+        errorLog.value = error.response.data.msg
+        showModal2.value = true;
+        return;
+    }
+    showModal1.value = true;
+}
+// 支付订单
+async function pay() {
+    // 第一步：调用 book_seat 接口预订座位
+    try {
+        const seatResponse = await axios.post(`http://localhost:8000/api/flights/${flightId.value}/book/`, {
+            seat_number: selectedSeat.value
+        });
+        // 第二步：座位预订成功后，继续创建订单
         const totalPrice = parseFloat(flight.value.price) + (num.value * 80) + insprice.value;
         formData.value.price = totalPrice;
-        formData.value.seat_letter = seatLetter.value; // 添加座位字母到 formData
-        // formData.value.flight = flight.value.id; // 确保传递的是 flight_id
-        // console.log('formData:', formData.value)
-        
-        // 没有购买直接创建订单
-        await axios.post('http://localhost:8000/api/order/book/', formData.value);
-        isPaid.value = true;
-
-        // 启动倒计时
-        let interval = setInterval(() => {
-            countdown.value--;
-            if (countdown.value <= 0) {
-                clearInterval(interval);
-                router.push('/ticket');
-            }
-        }, 1000);
+        formData.value.seat = seatResponse.data.id; 
+        formData.value.seat_number =selectedSeat.value;
     } catch (error) {
-        console.error('Error creating order:', error);
-        errorLog.value = '创建订单失败，请稍后再试'
+        console.error('Error booking seat:', error.response.data);
+        errorLog.value = error.response.data.msg
         showModal2.value = true;
+        return;
     }
+    // console.log('Seat booked successfully', seatResponse.data.id)
+    
+    // 创建订单
+    try {
+        await axios.post('http://localhost:8000/api/order/book/', formData.value);
+    } catch (error) {
+        console.error('Error creating order:', error.response.data);
+        // 取消座位预订
+        await axios.post(`http://localhost:8000/api/flights/${flightId.value}/cancel/`, {
+            seat_number: selectedSeat.value
+        });
+        errorLog.value = error.response?.data?.error || '创建订单失败，请稍后再试';
+        showModal2.value = true;
+        return;
+    }
+    // 支付成功页面打开
+    isPaid.value = true;
+    // 倒计时跳转
+    let interval = setInterval(() => {
+        countdown.value--;
+        if (countdown.value <= 0) {
+            clearInterval(interval);
+            router.push('/ticket');
+        }
+    }, 1000);
 }
 
 async function searchFlightById() {
@@ -179,31 +185,10 @@ async function searchFlightById() {
         const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}`);
         flight.value = response.data;
     } catch (error) {
-        console.error('Error fetching flight:', error);
+        console.error('Error fetching flight:', error.response.data);
     } finally {
         loading.value = false;
     }
-}
-
-async function fetchSeats() {
-  try {
-    const response = await axios.get(`http://localhost:8000/api/flights/${flightId.value}/seats/`);
-    
-    // 提取所有已预订座位号
-    const bookedSeats = response.data
-      .filter(seat => seat.status === 'booked')
-      .map(seat => seat.seat_number);
-
-    takenSeats.value = bookedSeats;
-
-  } catch (error) {
-    console.error('Error fetching seats:', error);
-  }
-}
-
-function handleSelect(seatName) {
-  selectedSeat.value = seatName;
-  formData.value.seat_letter = seatName; // 提交到订单
 }
 
 const closeModal = () => {
@@ -213,7 +198,6 @@ const closeModal = () => {
 
 onMounted(() => {
     searchFlightById();
-    fetchSeats();
 });
 </script>
 
@@ -306,18 +290,18 @@ onMounted(() => {
                                 <div class="w-[4px] h-[27px] rounded-md bg-[#0D6EFD]"></div>
                                 <h4 class="text-2xl font-bold mb-0 ml-3">选择座位</h4>
                             </div>
-                            <div class="seat-map grid grid-cols-7 gap-2">
-                                <!-- 添加座位字母选择按钮 -->
+                            <!-- <div class="seat-map grid grid-cols-7 gap-2">
                                 <div v-for="letter in ['A', 'B', 'C', 'D', 'E', 'F']" :key="letter"
                                     class="seat-letter w-10 h-10 flex items-center justify-center border border-gray-300 rounded cursor-pointer"
                                     :class="{ 'bg-blue-600 text-white': seatLetter === letter }"
                                     @click="selectSeatLetter(letter)">
                                     {{ letter }}
                                 </div>
+                            </div> -->
+                            <div class="border border-[#888993]">
+                                <Seat @select-seat="(seat) => selectedSeat = seat" />
                             </div>
-                        </div>
-                        <div>
-                            <!-- <Seat :flight-id="flightId" :taken-seats="takenSeats" @select-seat="handleSelect" /> -->
+                            
                         </div>
                     </div>
                     <div class="grid grid-cols-12 gap-4 mt-6">

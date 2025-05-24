@@ -80,7 +80,7 @@ const confirmSetting = () => {
 </script>
 
 <template>
-  <aside class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-gray-100/70  border-r rtl:border-r-0 rtl:border-l">
+  <aside class="flex flex-col w-64 h-screen px-4 py-8 overflow-y-auto bg-gray-100  border-r rtl:border-r-0 rtl:border-l">
 
     <div  class="flex items-center px-4 -mx-2">
       <button @click="showAvatarModal = true" style="cursor: pointer;">

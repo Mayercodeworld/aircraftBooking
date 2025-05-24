@@ -12,4 +12,4 @@ class UserInfo(models.Model):
 
     class Meta:
         verbose_name = '用户信息'
-        verbose_name_plural = '多个用户信息'
+        verbose_name_plural = '用户信息'

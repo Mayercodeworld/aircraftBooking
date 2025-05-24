@@ -1,0 +1,157 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        window.batch_import = true; // 设置 batch_import 变量为 true
+    </script>
+{% endblock %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <button id="batch-import-btn" class="button">批量导入</button>
+    </li>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+    <!-- 自定义模态框 -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>批量导入航班信息</h2>
+            <form id="importForm">
+                <label for="departureCity">出发地城市:</label>
+                <input type="text" id="departureCity" name="departure_city" required><br><br>
+
+                <label for="arrivalCity">目的地城市:</label>
+                <input type="text" id="arrivalCity" name="arrival_city" required><br><br>
+
+                <button type="button" id="importSubmitBtn">确认导入</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover { color: black; }
+    </style>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // =========== 模态框显示逻辑 ===========
+            var batchImportBtn = document.getElementById('batch-import-btn');
+            var importModal = document.getElementById('importModal');
+            var closeModalBtn = document.querySelector('.modal .close');
+
+            if (batchImportBtn && importModal) {
+                batchImportBtn.addEventListener('click', function () {
+                    importModal.style.display = 'block';
+                });
+            }
+
+            if (closeModalBtn && importModal) {
+                closeModalBtn.addEventListener('click', function () {
+                    importModal.style.display = 'none';
+                });
+            }
+
+            window.onclick = function(event) {
+                if (event.target === importModal) {
+                    importModal.style.display = 'none';
+                }
+            };
+
+            // =========== 表单提交逻辑 ===========
+            var importSubmitBtn = document.getElementById('importSubmitBtn');
+            if (importSubmitBtn) {
+                importSubmitBtn.addEventListener('click', function () {
+                    const departureCity = document.getElementById('departureCity').value.trim();
+                    const arrivalCity = document.getElementById('arrivalCity').value.trim();
+
+                    if (!departureCity || !arrivalCity) {
+                        alert("请输入完整的出发地和目的地");
+                        return;
+                    }
+
+                    // 获取 csrftoken（优先使用 cookie）
+                    function getCookie(name) {
+                        let cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            const cookies = document.cookie.split(';');
+                            for (let i = 0; i < cookies.length; i++) {
+                                const cookie = cookies[i].trim();
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    const csrftoken = getCookie('csrftoken');
+
+                    fetch("{% url 'admin:flights_flight_import-flights' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `departure_city=${encodeURIComponent(departureCity)}&arrival_city=${encodeURIComponent(arrivalCity)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                        importModal.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('请求失败，请查看控制台日志');
+                        importModal.style.display = 'none';
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}
