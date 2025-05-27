@@ -20,6 +20,12 @@ onMounted(async () => {
 });
 
 watch(() => {
+  if(router.currentRoute.value.path == '/about') {
+    currentpage.value = '关于';
+  }
+  if(router.currentRoute.value.path == '/') {
+    currentpage.value = '首页';
+  }
   if(router.currentRoute.value.path != '/' && router.currentRoute.value.path != '/about') {
     currentpage.value = '';
   }

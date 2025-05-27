@@ -41,7 +41,7 @@ class Order(models.Model):
 
 class TicketNotification(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='notifications')
-    sent_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField()
     message = models.TextField()
 
     def __str__(self):

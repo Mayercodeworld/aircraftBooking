@@ -17,12 +17,12 @@ class Flight(models.Model):
     flight_no = models.CharField(max_length=16, verbose_name='航班号')
     departure_city = models.CharField(max_length=8, verbose_name='出发城市')
     arrival_city = models.CharField(max_length=8, verbose_name='到达城市')
-    arrivePortName = models.CharField(max_length=20)
-    departPortName = models.CharField(max_length=20)
+    departPortName = models.CharField(max_length=20, verbose_name='出发机场')
+    arrivePortName = models.CharField(max_length=20, verbose_name='到达机场')
     departure_time = models.DateTimeField(verbose_name='出发时间')
-    arrival_time = models.DateTimeField()
+    arrival_time = models.DateTimeField(verbose_name='到达时间')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='价格')
-    aircraft = models.ForeignKey(Aircraft, on_delete=models.CASCADE, related_name='flights')  # 外键到Aircraft
+    aircraft = models.ForeignKey(Aircraft, on_delete=models.CASCADE, related_name='flights', verbose_name='型号')  # 外键到Aircraft
     airline = models.CharField(max_length=100, default='UnKnown', verbose_name='航空公司') 
 
 

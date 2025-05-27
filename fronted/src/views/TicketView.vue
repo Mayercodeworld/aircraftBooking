@@ -226,12 +226,8 @@ function handleBooking(id) {
                     <div
                         class="grid grid-cols-12 text-white bg-[#404156] dark:bg-[#282836] p-4 lg:p-[48px] rounded-md border-none">
                         <div class="col-span-12 sm:col-span-8 flex p-4">
-                            <div
-                                class="text-[#28303B] dark:text-white bg-white dark:bg-[#404156] w-[65px] h-[65px] text-[24px] flex items-center justify-center rounded-full mr-4">
-                                <i class="fas fa-paper-plane"></i>
-                            </div>
                             <div>
-                                <h3 class="text-[28px] font-medium mb-1 sm:mb-2 leading-none">{{ depart }}</h3>
+                                <h3 class="text-[28px] font-medium mb-1 sm:mb-2 leading-none">{{ depart }} ↦ {{ formData.to }}</h3>
                                 <p class="mb-0 opacity-75 font-normal">{{ formData.depart }} | 直达</p>
                             </div>
                         </div>
@@ -400,12 +396,12 @@ function handleBooking(id) {
                                     <!-- airlines name -->
                                     <div class="col-span-6 sm:col-span-3">
                                         <div class="flex items-center">
-                                            <div class="p-3">
-                                                <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
-                                                    alt="" class="w-full h-auto" width="47" />
+                                            <div class="p-4">
+                                                <!-- <img src="https://cdn.easyfrontend.com/pictures/airlines_logo1.png"
+                                                    alt="" class="w-full h-auto" width="47" /> -->
                                             </div>
                                             <div>
-                                                <h4 class="font-medium mb-0 text-[16px] opacity-75">
+                                                <h4 class="font-medium ml-10 mb-0 text-[16px] opacity-75">
                                                     {{ flight.airline }} <br />
                                                     {{ flight.flight_no }}
                                                 </h4>

@@ -98,13 +98,13 @@ async function sendMessage() {
     }
 }
 
-// // 监听 place 的变化
-// watch(() => props.place, async (newPlace) => {
-//     if (newPlace) {
-//         newQuestion.value = `你是${newPlace}当地的资深导游,现在需要你简单介绍一下当地有什么值得游玩的地方,倡议大家过来游玩，最好使用几个表情`;
-//         await sendMessage();
-//     }
-// });
+// 监听 place 的变化
+watch(() => props.place, async (newPlace) => {
+    if (newPlace) {
+        newQuestion.value = `你是${newPlace}当地的资深导游,现在需要你简单介绍一下当地有什么值得游玩的地方,倡议大家过来游玩，最好使用几个表情`;
+        await sendMessage();
+    }
+});
 
 // // 在组件挂载时检查 place 是否已经有值
 // onMounted(async () => {
@@ -143,7 +143,7 @@ onUnmounted(() => {
                 </div>
                 <!-- AI -->
                 <div class="flex gap-x-2 sm:gap-x-4">
-                    <img class="shrink-0 size-[38px]" src="" alt=""/>
+                    <img class="shrink-0 size-[38px]" src="../assets/photos/AI.png" alt=""/>
                     <div class="grow max-w-[90%] space-y-3">
                         <div class="chat bg-white border border-gray-200 rounded-lg p-4 space-y-3">
                             <div v-if="index === conversation.length-1" class="text-normal text-black">

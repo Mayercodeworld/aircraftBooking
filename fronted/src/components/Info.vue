@@ -84,7 +84,7 @@ const confirmSetting = () => {
 
     <div  class="flex items-center px-4 -mx-2">
       <button @click="showAvatarModal = true" style="cursor: pointer;">
-        <img class="object-cover mx-2 rounded-full h-9 w-9" :src="userInfo.avatar" alt="avatar" />
+        <img class="object-cover mx-2 rounded-full h-15 w-15" :src="userInfo.avatar" alt="avatar" />
       </button>
       <span class="mx-2 font-medium text-black dark:text-gray-200">{{ userInfo.name }}</span>
     </div>

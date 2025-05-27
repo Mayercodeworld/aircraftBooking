@@ -91,6 +91,7 @@ WSGI_APPLICATION = 'backed.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# 开发环境下使用SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -98,6 +99,17 @@ DATABASES = {
     }
 }
 
+# # 部署时使用PostgreSQL
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'aircraft_booking_db',
+#         'USER': 'booking_user',
+#         'PASSWORD': 'your_secure_password',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

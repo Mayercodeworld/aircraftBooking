@@ -3,7 +3,7 @@
   <section class="py-24 relative">
     <div class="w-full max-w-7xl px-4 md:px-5 lg:px-5 mx-auto">
       <div class="w-full justify-start items-center gap-12 grid lg:grid-cols-2 grid-cols-1">
-        <div class="w-full justify-center items-start gap-6 grid sm:grid-cols-2 grid-cols-1 lg:order-first order-last">
+        <div class="w-full relative justify-center items-start gap-6 grid sm:grid-cols-2 grid-cols-1 lg:order-first order-last">
           <div class="pt-35 sm:justify-end justify-start items-start gap-2.5 flex">
             <img class="rounded-xl w-[200px] object-cover" src="../assets/photos/media/mc.jpg" alt="about Us image" />
           </div>
@@ -11,8 +11,10 @@
            alt="about Us image" />
           <img class="sm:ml-60 ml-auto rounded-xl w-[200px] object-cover" src="../assets/photos/media/rwh.jpg"
            alt="about Us image" />
+          <img class="sm:ml-117 mt-57 absolute rounded-xl w-[200px] object-cover" src="../assets/photos/media/fcr.jpg"
+           alt="about Us image" />
         </div>
-        <div class="w-full flex-col justify-center lg:items-start items-center gap-10 inline-flex">
+        <div class="ml-20 w-full flex-col justify-center lg:items-start items-center gap-10 inline-flex">
           <div class="w-full flex-col justify-center items-start gap-8 flex">
             <div class="w-full flex-col justify-start lg:items-start items-center gap-3 flex">
               <h2 class="text-gray-900 text-4xl font-bold font-manrope leading-normal lg:text-start text-center">
@@ -30,7 +32,6 @@
   </section>
   <div class="about-container">
     <div class="markdown-content">
-
       <!-- npm 镜像设置 -->
       <h2>📘 项目开发环境配置</h2>
 
@@ -163,7 +164,7 @@ python setup.py sdist install
 }
 
 .markdown-content {
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
   padding: 2rem;
   background: white;

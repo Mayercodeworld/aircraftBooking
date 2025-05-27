@@ -45,6 +45,7 @@ const get_user_tickets = () => {
       console.log(res.data);
       // 将返回的数据赋值给 orders 变量
       orders.value = res.data;
+      console.log("Orders:", orders.value);
       // 获取当前时间
       const now = new Date();
       console.log("Current Time:", now);
@@ -53,6 +54,9 @@ const get_user_tickets = () => {
 
       // 遍历订单列表
       for (let i = 0; i < orders.value.length; i++) {
+        if(orders.value[i].status === '已取消') {
+          continue;
+        }
         const order = orders.value[i];
         const departureTime = new Date(order.flight.departure_time);
         console.log("Flight Departure Time:", departureTime);
@@ -144,7 +148,7 @@ const get_user_tickets = () => {
             </div>
           <div class="grid grid-cols-12 gap-4">
             <!-- item -->
-            <div class="box col-span-12 md:col-span-6 lg:col-span-3 px-1" v-for="(destination, index) in destinations" :key="index">
+            <div v-for="(destination, index) in destinations" :key="index" class="box col-span-12 md:col-span-6 lg:col-span-3 px-1" >
               <router-link :to="{ name: 'Travel', params: { id: destination.id } }">
                 <div class="dark:bg-[#404156] shadow-lg border-none rounded-none mt-4">
                   <div class="relative">
@@ -160,26 +164,38 @@ const get_user_tickets = () => {
           </div>
         </div>
     </section>
-<!--  模态框  -->
-    <div v-if="fly" class="modal-overlay">
-     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl max-h-140 ">
-       <h2 class="text-2xl font-bold mb-4">即将起飞的航班提醒</h2>
-       <div v-for="(flight, index) in upcomingFlights" :key="index" class="mb-4">
-         <p class="text-lg font-semibold">
-           尊敬的 {{ flight.name }} {{ flight.gender === '男' ? '先生' : '女士' }}，
-         </p>
-         <p class="text-gray-700 dark:text-gray-300 mb-1">
-           您的航班 {{ flight.flight_no }} 将在 {{ flight.departure_time }} 出发。
-         </p>
-         <p class="text-gray-700 dark:text-gray-300 mb-1">
-           请于 {{ flight.departure_time }} 前前往机场取票，如果超时，后果自负。
-         </p>
-       </div>
-       <button @click="fly = false" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-         关闭
-       </button>
-     </div>
-   </div>
+    <!-- 模态框 -->
+    <div v-if="fly" class="modal-overlay fixed inset-0 flex justify-center z-50">
+      <div class="modal-content relative w-[500px] h-[250px] bg-white rounded-lg shadow-xl p-6">
+        <!-- 关闭按钮 -->
+        <button @click="fly = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <!-- 标题 -->
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">即将起飞的航班提醒</h2>
+        <!-- 内容 -->
+        <div v-for="(flight, index) in upcomingFlights" :key="index" class="mb-4">
+          <p class="text-lg font-semibold text-gray-700 mb-2">
+            <span class="mr-2"><svg class="inline w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg></span>
+            尊敬的 {{ flight.name }} {{ flight.gender === '男' ? '先生' : '女士' }}，
+          </p>
+          <p class="text-gray-600 mb-2">
+            <span class="mr-2"><svg class="inline w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></span>
+            您的航班 {{ flight.flight_no }} 将在 {{ flight.departure_time.slice(0, 10) }} 出发。
+          </p>
+          <p class="text-gray-600 mb-2">
+            <span class="mr-2"><svg class="inline w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+            请于 {{ flight.departure_time.slice(0, 10) }} 前前往机场取票，如果超时，后果自负。
+          </p>
+        </div>
+        <!-- 关闭按钮 -->
+        <button @click="fly = false" class="w-full px-4 py-2 text-center text-white transition-colors duration-200 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          关闭
+        </button>
+      </div>
+    </div>
 </template>
 
 <style scoped>
@@ -211,7 +227,7 @@ const get_user_tickets = () => {
 .box .relative img {
   /* object-fit: cover; */
   width: 100%;
-  height: 460px;
+  height: 440px;
 }
 
 /* 模态框样式 */
