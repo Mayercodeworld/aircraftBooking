@@ -1,0 +1,45 @@
+[{
+    'flightNo': 'ZH9112', 
+    'aircraftType': '73F', 
+    'departTime': '06: 55', 
+    'arriveTime': '12: 10', 
+    'departCityCode': 'BJS', 
+    'departPortName': '首都国际机场', 
+    'departPortCode': 'PEK', 
+    'departTerminal': 'T3', 
+    'arriveCityCode': 'SZX', 
+    'arrivePortName': '宝安国际机场', 
+    'arrivePortCode': 'SZX', 
+    'arriveTerminal': 'T3', 
+    'departDate': '2025-05-28', 
+    'onTimeRate': '-', 
+    'price': 417, 
+    'airlineCompanyName': '深圳航空', 
+    'airlineCode': 'ZH', 
+    'currentWeekSchedule': {'1': True, '2': True, '3': True, '4': True, '5': True, '6': True, '7': True
+    }, 
+    'stopCityName': '宜春'
+},
+{
+    'flightNo': 'KN5857', 
+    'aircraftType': '73C', 
+    'departTime': '07: 15', 
+    'arriveTime': '10: 35', 
+    'departCityCode': 'BJS', 
+    'departPortName': '大兴国际机场', 
+    'departPortCode': 'PKX', 
+    'departTerminal': '', 
+    'arriveCityCode': 'SZX', 
+    'arrivePortName': '宝安国际机场', 
+    'arrivePortCode': 'SZX', 
+    'arriveTerminal': 'T3', 
+    'departDate': '2025-06-01', 
+    'onTimeRate': '97%', 
+    'price': 440, 
+    'airlineCompanyName': '中国联合航空', 
+    'airlineCode': 'KN', 
+    'currentWeekSchedule': {'1': True, '2': True, '3': True, '4': True, '5': True, '6': True, '7': True
+    }, 
+    'stopCityName': None
+}]
+

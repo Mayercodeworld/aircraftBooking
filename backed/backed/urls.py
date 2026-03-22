@@ -39,7 +39,5 @@ urlpatterns = [
     path("api/user/forget/", user_views.forget_password),
     # path("api/sparkai/", ai_views.get_answer_spark)
     # path("api/sparkai/", ai_views.get_answer_qwq)
-    path("api/sparkai/", ai_views.get_answer_siliconflow)
-
-
+    path("api/sparkai/", ai_views.get_answer_spark)
 ]

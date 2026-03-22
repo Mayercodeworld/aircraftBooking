@@ -1,8 +1,12 @@
 <script setup>
 import { onMounted, onUnmounted ,ref} from "vue";
 import AMapLoader from "@amap/amap-jsapi-loader";
+
+const AMAP_SECURITY_CODE = import.meta.env.VITE_AMAP_SECURITY_CODE;
+const AMAP_KEY = import.meta.env.VITE_AMAP_KEY;
+console.log(AMAP_KEY)
 window._AMapSecurityConfig = {
-  securityJsCode: '9c6c83d08507f32bad97c7d2a80c49a1',//你的秘钥
+  securityJsCode: AMAP_SECURITY_CODE,
 }
 let map = null;
 let placeSearchInstance = null;
@@ -16,7 +20,7 @@ const display = ref(false);
 
 onMounted(() => {
   AMapLoader.load({
-    key: "60ad4b680019f571a2cffd7df843d67e", // 申请好的Web端开发者Key，首次调用 load 时必填
+    key: AMAP_KEY, // 申请好的Web端开发者Key，首次调用 load 时必填
     version: "2.0", // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     plugins: ["AMap.ToolBar", "AMap.Scale", 'AMap.HawkEye', 'AMap.PlaceSearch'], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
   })

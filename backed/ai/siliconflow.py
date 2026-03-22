@@ -4,7 +4,7 @@ class SiliconFlow:
     def __init__(self):
         self.client = OpenAI(
             base_url="https://api.siliconflow.cn/v1",
-            api_key="sk-xycrdrdoixkekxhrjnrozcmvvcjxkicsboxrvljirczmudvu",
+            api_key="",
         )
 
     def get_response(self, query):

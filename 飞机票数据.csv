@@ -1,0 +1,7 @@
+flightNo,aircraftType,departTime,arriveTime,departCityCode,departPortName,departPortCode,departTerminal,arriveCityCode,arrivePortName,arrivePortCode,arriveTerminal,departDate,onTimeRate,price,airlineCompanyName,airlineCode,stopCityName,1,2,3,4,5,6,7
+3U4565,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-06-02,97%,1940.0,四川航空,3U,兰州,False,False,False,False,False,True,False
+3U4565,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-06-02,97%,1940.0,四川航空,3U,兰州,True,True,True,True,True,False,True
+CZ4947,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-05-23,97%,,南方航空,CZ,兰州,False,False,False,False,False,True,False
+CZ4947,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-05-21,97%,,南方航空,CZ,兰州,True,True,True,True,True,False,True
+QW6153,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-05-24,97%,1580.0,青岛航空,QW,兰州,False,False,False,False,False,True,False
+QW6153,JET,08:55,16:50,CSX,黄花国际机场,CSX,T2,HTN,昆冈机场,HTN,,2025-05-24,97%,1580.0,青岛航空,QW,兰州,True,True,True,True,True,False,True

@@ -1,11 +1,14 @@
+import os
+from dotenv import load_dotenv
 from sparkai.llm.llm import ChatSparkLLM, ChunkPrintHandler
 from sparkai.core.messages import ChatMessage
 
-SPARKAI_URL = 'wss://spark-api.xf-yun.com/v1.1/chat'
-SPARKAI_APP_ID = '38f43656'
-SPARKAI_API_SECRET = 'ZTBhODUwZDk5MjQwYjhmMzZiYWQyNjFm'
-SPARKAI_API_KEY = '2ec3725c7f3f66cb54b1417391ad0141'
-SPARKAI_DOMAIN = 'lite'
+load_dotenv()
+SPARKAI_URL = os.getenv('SPARKAI_URL')
+SPARKAI_APP_ID = os.getenv('SPARKAI_APP_ID')
+SPARKAI_API_SECRET = os.getenv('SPARKAI_API_SECRET')
+SPARKAI_API_KEY = os.getenv('SPARKAI_API_KEY')
+SPARKAI_DOMAIN = os.getenv('SPARKAI_DOMAIN')
 
 class Spark:
     def __init__(self):
